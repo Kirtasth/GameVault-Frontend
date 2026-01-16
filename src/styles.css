@@ -1,1 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@import "tailwindcss/utilities";
+
+@theme {
+  --color-peacock-dark: #0f172a;   /* Deep Navy */
+  --color-peacock-purple: #581c87; /* Royal Purple */
+  --color-peacock-teal: #14b8a6;   /* Bright Teal */
+  --color-peacock-emerald: #10b981;/* Highlight Green */
+}
