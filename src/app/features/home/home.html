@@ -1,82 +1,101 @@
-<div class="min-h-screen bg-peacock-dark text-white">
-  <!-- Navigation Bar -->
-  <nav class="bg-white/10 backdrop-blur-md border-b border-white/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <span class="text-2xl font-bold bg-gradient-to-r from-peacock-teal to-peacock-emerald bg-clip-text text-transparent">
-              GameVault
-            </span>
-          </div>
-          <div class="hidden md:block">
-            <div class="ml-10 flex items-baseline space-x-4">
-              <a href="#" class="bg-peacock-purple/50 text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-              <a href="#" class="text-gray-300 hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">My Games</a>
-              <a href="#" class="text-gray-300 hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Browse</a>
-            </div>
-          </div>
-        </div>
-        <div class="hidden md:block">
-          <div class="ml-4 flex items-center md:ml-6">
-            <div class="flex items-center gap-4">
-              <span class="text-gray-300 text-sm">Welcome!!</span>
-              <button
-                (click)="logout()"
-                class="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-red-500/30"
-              >
-                Sign Out
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </nav>
+<div class="flex h-screen bg-peacock-dark overflow-hidden">
+  <!-- Sidebar -->
+  <app-sidebar class="w-64 shrink-0"></app-sidebar>
 
   <!-- Main Content -->
-  <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <!-- Hero Section -->
-    <div class="px-4 py-6 sm:px-0">
-      <div class="bg-white/5 rounded-2xl p-8 border border-white/10 backdrop-blur-sm">
-        <h1 class="text-4xl font-bold mb-4">Welcome to your Vault</h1>
-        <p class="text-gray-400 text-lg mb-8">Track, organize, and discover your next gaming adventure.</p>
+  <main class="flex-1 overflow-y-auto p-8">
+    <!-- Header -->
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold text-white mb-2">Store</h1>
+      <p class="text-gray-400">Discover and play the best games</p>
+    </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- Stat Card 1 -->
-          <div class="bg-peacock-purple/20 p-6 rounded-xl border border-peacock-purple/30">
-            <h3 class="text-peacock-teal font-semibold mb-2">Total Games</h3>
-            <p class="text-3xl font-bold">0</p>
-          </div>
-
-          <!-- Stat Card 2 -->
-          <div class="bg-peacock-purple/20 p-6 rounded-xl border border-peacock-purple/30">
-            <h3 class="text-peacock-teal font-semibold mb-2">Currently Playing</h3>
-            <p class="text-3xl font-bold">0</p>
-          </div>
-
-          <!-- Stat Card 3 -->
-          <div class="bg-peacock-purple/20 p-6 rounded-xl border border-peacock-purple/30">
-            <h3 class="text-peacock-teal font-semibold mb-2">Completed</h3>
-            <p class="text-3xl font-bold">0</p>
-          </div>
+    <!-- Hero Section: Become a Developer -->
+    <section class="mb-12 relative rounded-2xl overflow-hidden h-64 md:h-80 lg:h-96 group">
+      <img
+        src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=2070"
+        alt="Coding Setup"
+        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter brightness-50"
+      >
+      <div class="absolute inset-0 bg-linear-to-t from-peacock-dark via-peacock-dark/50 to-transparent flex flex-col justify-center items-center p-8 text-center">
+        <span class="inline-block px-3 py-1 bg-peacock-teal text-white text-xs font-bold rounded-full mb-4">JOIN THE CREATORS</span>
+        <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Publish Your Game on GameVault</h2>
+        <p class="text-gray-200 max-w-2xl mb-8 text-lg">
+          Turn your passion into a profession. Reach millions of players worldwide and monetize your creativity with our developer tools.
+        </p>
+        <div class="flex gap-4">
+          <button routerLink="/become-developer" class="bg-peacock-teal hover:bg-peacock-emerald text-white font-bold py-3 px-8 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105">
+            Become a Developer
+          </button>
+          <button class="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-bold py-3 px-8 rounded-lg border border-white/30 transition-all duration-200">
+            Learn More
+          </button>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Recent Activity Section -->
-    <div class="mt-8 px-4 sm:px-0">
-      <h2 class="text-2xl font-bold mb-6">Recent Activity</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Placeholder Card -->
-        <div class="bg-white/5 rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group">
-          <div class="h-40 bg-gray-800 rounded-lg mb-4 flex items-center justify-center group-hover:bg-gray-700 transition-colors">
-            <span class="text-gray-500">No games added yet</span>
-          </div>
-          <h3 class="font-semibold text-lg mb-1">Start your collection</h3>
-          <p class="text-gray-400 text-sm">Add your first game to get started tracking your progress.</p>
-        </div>
+    <!-- Games Grid -->
+    <section>
+      <h2 class="text-2xl font-bold text-white mb-6">Trending Now</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        @if (games$ | async; as games) {
+          @for (game of games; track game.id) {
+            <div class="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:transform hover:scale-[1.02] transition-all duration-300 hover:shadow-xl hover:shadow-peacock-teal/10 group flex flex-col h-full">
+              <!-- Game Image -->
+              <div class="relative aspect-video overflow-hidden">
+                <img
+                  [src]="game.imageUrl"
+                  [alt]="game.title"
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                >
+                <div class="absolute top-2 right-2 bg-peacock-dark/80 backdrop-blur-sm text-white text-xs font-bold px-2 py-1 rounded">
+                  {{ game.price | currency }}
+                </div>
+              </div>
+
+              <!-- Game Info -->
+              <div class="p-4 flex flex-col grow">
+                <div class="flex justify-between items-start mb-2">
+                  <h3 class="text-lg font-bold text-white truncate pr-2" [title]="game.title">{{ game.title }}</h3>
+                </div>
+
+                <p class="text-gray-400 text-sm line-clamp-2 mb-4 grow">{{ game.description }}</p>
+
+                <!-- Tags -->
+                <div class="flex flex-wrap gap-2 mb-4">
+                  @for (tag of game.tags.slice(0, 3); track tag) {
+                    <span class="text-xs text-peacock-teal bg-peacock-teal/10 px-2 py-1 rounded-full border border-peacock-teal/20">
+                      {{ tag }}
+                    </span>
+                  }
+                </div>
+
+                <!-- Action Button -->
+                <button class="w-full py-2 bg-white/10 hover:bg-peacock-teal text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 group-hover:bg-peacock-teal">
+                  <span>View Details</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          }
+        } @else {
+          <!-- Loading Skeletons -->
+          @for (i of [1,2,3,4]; track i) {
+            <div class="bg-white/5 rounded-xl overflow-hidden animate-pulse h-80">
+              <div class="h-40 bg-white/10"></div>
+              <div class="p-4 space-y-3">
+                <div class="h-6 bg-white/10 rounded w-3/4"></div>
+                <div class="h-4 bg-white/10 rounded w-full"></div>
+                <div class="h-4 bg-white/10 rounded w-2/3"></div>
+                <div class="h-10 bg-white/10 rounded w-full mt-4"></div>
+              </div>
+            </div>
+          }
+        }
       </div>
-    </div>
+    </section>
   </main>
 </div>

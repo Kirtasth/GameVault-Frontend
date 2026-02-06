@@ -5,6 +5,12 @@
       <p class="text-gray-300">Sign in to continue to GameVault</p>
     </div>
 
+    @if (error) {
+      <div class="bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded-lg mb-6 text-sm text-center">
+        {{ error }}
+      </div>
+    }
+
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
       <!-- Email -->
       <div>

@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../../enviroments/environment';
-import {AuthResponseModel, CredentialsModel, RegistrationModel} from '../../models/user.model';
+import {AuthResponseModel, CredentialsModel, RegistrationModel, UserProfileModel} from '../../models/user.model';
 import {Observable} from 'rxjs';
 import {TOKEN_STORAGE_KEY} from '../../utils/constants';
 
@@ -31,10 +31,21 @@ export class BackendService {
   }
 
   logout(userId: number): Observable<any> {
-    return this.http.post(`${this.baseUrl}/${userId}/logout`, {})
+    const headers = this.getHeaders();
+    return this.http.post(`${this.baseUrl}/${userId}/logout`,
+      {}, {
+        headers
+      })
   }
 
-  private getHeaders(): { [key: string]: string} {
+  getUserProfile(userId: number): Observable<UserProfileModel> {
+    const headers = this.getHeaders();
+    return this.http.get<UserProfileModel>(`${this.baseUrl}/${userId}`, {
+      headers
+    })
+  }
+
+  private getHeaders(): { [key: string]: string } {
     return {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${localStorage.getItem(TOKEN_STORAGE_KEY)}`

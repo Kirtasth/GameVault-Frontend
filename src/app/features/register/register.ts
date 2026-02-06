@@ -35,8 +35,8 @@ export class Register implements OnInit {
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)]),
       confirmPassword: new FormControl('', [Validators.required]),
-      avatarUrl: new FormControl('', [Validators.required]),
-      bio: new FormControl('', [Validators.required])
+      avatarUrl: new FormControl(''),
+      bio: new FormControl('')
     }, {validators: this.passwordMatchValidator});
 
     if (this.authService.isAuthenticated()) {
@@ -65,6 +65,7 @@ export class Register implements OnInit {
     }
 
     this.loading = true;
+
     this.authService.register(this.registerForm.value)
       .pipe(
         finalize(() => this.loading = false)
@@ -73,7 +74,7 @@ export class Register implements OnInit {
         next: () => {
           this.router.navigate(['home']);
         },
-        error: (err) => {
+        error: () => {
           this.error = 'Registration failed. Please try again.';
           this.loading = false;
         }

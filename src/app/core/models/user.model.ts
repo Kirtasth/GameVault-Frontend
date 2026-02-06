@@ -11,6 +11,15 @@ export interface RegistrationModel {
   bio: string | null;
 }
 
+export interface DeveloperRegistrationModel {
+  name: string;
+  description: string;
+}
+
+export interface RefreshTokenRequestModel {
+  token: string;
+}
+
 export interface AuthResponseModel {
   userId: number;
   accessToken: string;
@@ -20,8 +29,29 @@ export interface AuthResponseModel {
   refreshExpiresIn: number;
 }
 
-export interface RefreshTokenResponseModel {
+export interface Role {
+  id: number;
+  role: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
 
-  userId: number;
-  token: string;
+export interface UserProfileModel {
+  id: number;
+  username: string;
+  email: string;
+  avatarUrl: string | null;
+  bio: string | null;
+  accountLocked: boolean;
+  lockReason: string | null;
+  lockInstant: string | null;
+  roles: Role[];
+}
+
+export enum UserRole {
+  USER = 'USER',
+  DEVELOPER = 'DEVELOPER',
+  ADMIN = 'ADMIN'
 }

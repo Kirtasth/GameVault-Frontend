@@ -4,13 +4,6 @@ import {AuthResponseModel, CredentialsModel, RegistrationModel} from '../models/
 import {map, Observable} from 'rxjs';
 import {TOKEN_STORAGE_KEY, USER_ID_STORAGE_KEY} from '../utils/constants';
 
-export interface User {
-  id: number;
-  username: string;
-  email: string;
-  token?: string;
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -37,8 +30,8 @@ export class AuthService {
     return this.backendService.validateToken();
   }
 
-  getUserId(): string | null {
-    return localStorage.getItem(USER_ID_STORAGE_KEY);
+  getUserId(): number | null {
+    return localStorage.getItem(USER_ID_STORAGE_KEY) ? Number(localStorage.getItem(USER_ID_STORAGE_KEY)) : null;
   }
 
   getToken(): string | null {
@@ -49,9 +42,9 @@ export class AuthService {
     return !!this.getToken();
   }
 
-  logout(): void {
+  logout(): Observable<any> {
     const userId = this.getUserId();
-    this.backendService.logout(Number(userId)).pipe(
+    return this.backendService.logout(Number(userId)).pipe(
       map(() => {
         localStorage.removeItem(USER_ID_STORAGE_KEY);
         localStorage.removeItem(TOKEN_STORAGE_KEY);
