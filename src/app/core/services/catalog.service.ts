@@ -1,7 +1,9 @@
 import {inject, Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import {map, Observable, of} from 'rxjs';
 import {Game, NewDeveloperModel} from '../models/catalog.model';
 import {BackendService} from './api/backend.service';
+import {AuthService} from './auth.service';
+import {UserRole} from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +11,8 @@ import {BackendService} from './api/backend.service';
 export class CatalogService {
 
   private readonly backendService = inject(BackendService);
+  private readonly authService = inject(AuthService);
+
 
   // Mock data for now - will be replaced with API calls later
   private games: Game[] = [
@@ -84,5 +88,17 @@ export class CatalogService {
 
   registerDeveloper(developer: NewDeveloperModel): Observable<any> {
     return this.backendService.registerDeveloper(developer);
+  }
+
+  isUserDeveloper(): Observable<boolean> {
+    const userId = this.authService.getUserId();
+
+    if (!userId) {
+      throw new Error('User ID not found');
+    }
+
+    return this.backendService.getUserProfile(userId).pipe(
+      map(userProfile => userProfile.roles.some(role => role.role === UserRole.DEVELOPER))
+    );
   }
 }

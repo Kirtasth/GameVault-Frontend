@@ -10,7 +10,7 @@ import {
 } from '@angular/forms';
 import {RouterLink, Router} from '@angular/router';
 import {AuthService} from '../../core/services/auth.service';
-import {finalize} from 'rxjs';
+import {finalize, switchMap} from 'rxjs';
 
 @Component({
   selector: 'app-register',
@@ -65,9 +65,11 @@ export class Register implements OnInit {
     }
 
     this.loading = true;
+    const {email, password} = this.registerForm.value;
 
     this.authService.register(this.registerForm.value)
       .pipe(
+        switchMap(() => this.authService.login({email, password})),
         finalize(() => this.loading = false)
       )
       .subscribe({
@@ -76,7 +78,6 @@ export class Register implements OnInit {
         },
         error: () => {
           this.error = 'Registration failed. Please try again.';
-          this.loading = false;
         }
       });
   }

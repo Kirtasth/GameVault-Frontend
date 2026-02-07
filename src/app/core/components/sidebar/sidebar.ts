@@ -2,7 +2,8 @@ import {Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Router, RouterModule} from '@angular/router';
 import {AuthService} from '../../services/auth.service';
-import {UserService} from '../../services/user.service';
+import {CatalogService} from '../../services/catalog.service';
+import {catchError, Observable, of} from 'rxjs';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,17 +14,19 @@ import {UserService} from '../../services/user.service';
 })
 export class Sidebar implements OnInit {
   isCollapsed = false;
-  isDeveloper = false;
+  isDeveloper$: Observable<boolean> = of(false);
   private readonly authService = inject(AuthService);
-  private readonly userService = inject(UserService);
+  private readonly catalogService = inject(CatalogService);
   private readonly router = inject(Router);
 
   ngOnInit() {
     if (this.authService.isAuthenticated()) {
-      this.userService.isUserDeveloper().subscribe({
-        next: (isDev) => this.isDeveloper = isDev,
-        error: (err) => console.error('Error checking developer status:', err)
-      });
+      this.isDeveloper$ = this.catalogService.isUserDeveloper().pipe(
+        catchError((err) => {
+          console.error(err);
+          return of(false);
+        })
+      );
     }
   }
 
@@ -34,13 +37,13 @@ export class Sidebar implements OnInit {
   logout() {
     this.authService.logout().subscribe({
       next: () => {
-        this.isDeveloper = false;
+        this.isDeveloper$ = of(false);
         this.router.navigate(['/login']).then();
       },
       error: (err) => {
         console.error(err);
         // Even if the backend call fails, we should probably clear local storage and redirect
-        this.isDeveloper = false;
+        this.isDeveloper$ = of(false);
         localStorage.clear();
         this.router.navigate(['/login']).then();
       }
