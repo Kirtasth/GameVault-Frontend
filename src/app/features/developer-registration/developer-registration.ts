@@ -1,8 +1,12 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Sidebar } from '../../core/components/sidebar/sidebar';
+import {Component, inject, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {Router} from '@angular/router';
+import {Sidebar} from '../../core/components/sidebar/sidebar';
+import {CatalogService} from '../../core/services/catalog.service';
+import {finalize} from 'rxjs';
+import {AuthService} from '../../core/services/auth.service';
+import {NewDeveloperModel} from '../../core/models/catalog.model';
 
 @Component({
   selector: 'app-developer-registration',
@@ -11,33 +15,64 @@ import { Sidebar } from '../../core/components/sidebar/sidebar';
   templateUrl: './developer-registration.html',
   styleUrl: './developer-registration.css',
 })
-export class DeveloperRegistration {
-  private router = inject(Router);
+export class DeveloperRegistration implements OnInit {
+  private readonly router: Router = inject(Router);
+  private readonly catalogService: CatalogService = inject(CatalogService);
+  private readonly authService: AuthService = inject(AuthService);
 
+  protected devRegisterForm!: FormGroup;
+  protected devRegisterModel!: NewDeveloperModel;
+  protected userId: number | null = null;
+  protected submitted: boolean = false;
+  protected loading: boolean = false;
+  protected error: string = '';
 
-  devForm = new FormGroup({
-    devName: new FormControl('', [Validators.required, Validators.minLength(3)]),
-    description: new FormControl('', [Validators.required, Validators.minLength(20)])
-  });
+  ngOnInit(): void {
+    this.devRegisterForm = new FormGroup({
+      name: new FormControl('', [Validators.required, Validators.minLength(3)]),
+      description: new FormControl('')
+    })
 
-  submitted = false;
-  loading = false;
+    this.userId = this.authService.getUserId();
+  }
 
   onSubmit() {
     this.submitted = true;
 
-    if (this.devForm.invalid) {
+    if (this.devRegisterForm.invalid) {
+      return;
+    }
+
+    if (this.userId == null) {
+      this.authService.logout().subscribe(
+        () => {
+          this.router.navigate(['login']).then();
+        }
+      );
       return;
     }
 
     this.loading = true;
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Developer Registration:', this.devForm.value);
-      this.loading = false;
-      this.router.navigate(['/home']);
-      // TODO: Add actual API call to register as developer
-    }, 1500);
+    this.devRegisterModel = {
+      userId: this.userId,
+      name: this.devRegisterForm.value.name,
+      description: this.devRegisterForm.value.description
+    }
+
+    this.catalogService.registerDeveloper(this.devRegisterModel)
+      .pipe(
+        finalize(() => this.loading = false)
+      )
+      .subscribe({
+        next: () => {
+          this.router.navigate(['home']).then();
+        },
+        error: () => {
+
+          this.error = 'Registration failed. Please try again.';
+          this.loading = false;
+        }
+      });
   }
 }

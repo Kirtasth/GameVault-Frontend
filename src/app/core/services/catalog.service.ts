@@ -1,6 +1,6 @@
 import {inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { Game } from '../models/game.model';
+import {Game, NewDeveloperModel} from '../models/catalog.model';
 import {BackendService} from './api/backend.service';
 
 @Injectable({
@@ -82,4 +82,7 @@ export class CatalogService {
     return of(this.games.find(g => g.id === id));
   }
 
+  registerDeveloper(developer: NewDeveloperModel): Observable<any> {
+    return this.backendService.registerDeveloper(developer);
+  }
 }

@@ -11,11 +11,6 @@ export interface RegistrationModel {
   bio: string | null;
 }
 
-export interface DeveloperRegistrationModel {
-  name: string;
-  description: string;
-}
-
 export interface RefreshTokenRequestModel {
   token: string;
 }

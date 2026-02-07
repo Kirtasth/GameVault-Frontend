@@ -72,7 +72,7 @@ export class Register implements OnInit {
       )
       .subscribe({
         next: () => {
-          this.router.navigate(['home']);
+          this.router.navigate(['home']).then();
         },
         error: () => {
           this.error = 'Registration failed. Please try again.';

@@ -1,15 +1,14 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { Sidebar } from '../../core/components/sidebar/sidebar';
-import { CatalogService } from '../../core/services/catalog.service';
-import { Game } from '../../core/models/game.model';
-import { Observable } from 'rxjs';
+import {Component, inject, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {Sidebar} from '../../core/components/sidebar/sidebar';
+import {CatalogService} from '../../core/services/catalog.service';
+import {Game} from '../../core/models/catalog.model';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, Sidebar, RouterLink],
+  imports: [CommonModule, Sidebar],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })

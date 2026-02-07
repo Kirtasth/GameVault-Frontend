@@ -8,3 +8,9 @@ export interface Game {
   releaseDate: Date;
   tags: string[];
 }
+
+export interface NewDeveloperModel {
+  userId: number;
+  name: string;
+  description: string;
+}
