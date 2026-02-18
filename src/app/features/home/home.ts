@@ -2,7 +2,7 @@ import {Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Sidebar} from '../../core/components/sidebar/sidebar';
 import {CatalogService} from '../../core/services/catalog.service';
-import {Game} from '../../core/models/catalog.model';
+import {GamePage} from '../../core/models/catalog.model';
 import {catchError, Observable, of} from 'rxjs';
 import {RouterLink} from '@angular/router';
 import {AuthService} from '../../core/services/auth.service';
@@ -17,7 +17,7 @@ import {AuthService} from '../../core/services/auth.service';
 export class Home implements OnInit {
   private gameService = inject(CatalogService);
   private authService = inject(AuthService);
-  games$!: Observable<Game[]>;
+  games$!: Observable<GamePage>;
   isDeveloper$: Observable<boolean> = of(false);
 
   ngOnInit() {

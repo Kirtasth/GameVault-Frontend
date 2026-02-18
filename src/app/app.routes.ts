@@ -31,6 +31,13 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
 
+  {
+    path: 'dev-tools',
+    loadChildren: () => import('./features/dev-tools/dev-tools.routes').then(m => m.DEV_TOOLS_ROUTES),
+    title: 'GameVault - Developer Tools',
+    canActivate: [AuthGuard]
+  },
+
   {path: '**', redirectTo: 'home'}
 
 ];

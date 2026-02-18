@@ -13,15 +13,15 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   private readonly router = inject(Router);
 
   canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
+    _route: ActivatedRouteSnapshot,
+    _state: RouterStateSnapshot
   ): boolean | Observable<boolean> | Promise<boolean> {
     return this.checkAuth();
   }
 
   canActivateChild(
-    childRoute: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
+    _childRoute: ActivatedRouteSnapshot,
+    _state: RouterStateSnapshot
   ): boolean | Observable<boolean> | Promise<boolean> {
     return this.checkAuth();
   }

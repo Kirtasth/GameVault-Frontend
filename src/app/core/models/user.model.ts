@@ -12,7 +12,7 @@ export interface RegistrationModel {
 }
 
 export interface RefreshTokenRequestModel {
-  token: string;
+  refreshToken: string;
 }
 
 export interface AuthResponseModel {

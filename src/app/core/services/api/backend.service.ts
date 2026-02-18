@@ -1,10 +1,15 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {environment} from '../../../../enviroments/environment';
-import {AuthResponseModel, CredentialsModel, RefreshTokenRequestModel, RegistrationModel, UserProfileModel} from '../../models/user.model';
+import {environment} from '../../../../environments/environment';
+import {
+  AuthResponseModel,
+  CredentialsModel,
+  RefreshTokenRequestModel,
+  RegistrationModel,
+  UserProfileModel
+} from '../../models/user.model';
 import {Observable} from 'rxjs';
-import {TOKEN_STORAGE_KEY} from '../../utils/constants';
-import {NewDeveloperModel} from '../../models/catalog.model';
+import {NewDeveloperModel, NewGameModel} from '../../models/catalog.model';
 
 @Injectable({
   providedIn: 'root'
@@ -26,44 +31,40 @@ export class BackendService {
   }
 
   validateToken(): Observable<string> {
-    const headers = this.getHeaders();
     return this.http.get(`${this.authUrl}`, {
-      headers,
       responseType: 'text'
     })
   }
 
-  logout(userId: number): Observable<any> {
-    const headers = this.getHeaders();
-    return this.http.post(`${this.authUrl}/${userId}/logout`,
-      {}, {
-        headers
-      })
+  logout(): Observable<any> {
+    return this.http.post(`${this.authUrl}/logout`, {});
   }
 
   refreshToken(token: string): Observable<AuthResponseModel> {
-    const body: RefreshTokenRequestModel = { token };
+    const body: RefreshTokenRequestModel = { refreshToken: token };
     return this.http.post<AuthResponseModel>(`${this.authUrl}/refresh`, body);
   }
 
   getUserProfile(userId: number): Observable<UserProfileModel> {
-    const headers = this.getHeaders();
-    return this.http.get<UserProfileModel>(`${this.usersUrl}/${userId}`, {
-      headers
-    })
+    return this.http.get<UserProfileModel>(`${this.usersUrl}/${userId}`);
   }
 
   registerDeveloper(developer: NewDeveloperModel): Observable<any> {
-    const headers = this.getHeaders();
-    return this.http.post(`${this.catalogUrl}/register-developer`, developer, {
-      headers
-    })
+    return this.http.post(`${this.catalogUrl}/developer`, developer);
   }
 
-  private getHeaders(): { [key: string]: string } {
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem(TOKEN_STORAGE_KEY)}`
-    }
+  createGame(game: NewGameModel): Observable<any> {
+    const formData = new FormData();
+    formData.append('title', game.title);
+    formData.append('description', game.description);
+    formData.append('price', game.price.toString());
+    formData.append('releaseDate', game.releaseDate.toISOString());
+    formData.append('image', game.image);
+
+    return this.http.post(`${this.catalogUrl}`, formData);
+  }
+
+  getGames(): Observable<any> {
+    return this.http.get(`${this.catalogUrl}`);
   }
 }

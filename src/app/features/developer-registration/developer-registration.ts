@@ -2,7 +2,6 @@ import {Component, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
-import {Sidebar} from '../../core/components/sidebar/sidebar';
 import {CatalogService} from '../../core/services/catalog.service';
 import {finalize} from 'rxjs';
 import {AuthService} from '../../core/services/auth.service';
@@ -11,7 +10,7 @@ import {NewDeveloperModel} from '../../core/models/catalog.model';
 @Component({
   selector: 'app-developer-registration',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Sidebar],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './developer-registration.html',
   styleUrl: './developer-registration.css',
 })

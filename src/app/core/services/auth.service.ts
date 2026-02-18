@@ -48,8 +48,7 @@ export class AuthService {
   }
 
   logout(): Observable<any> {
-    const userId = this.getUserId();
-    return this.backendService.logout(Number(userId)).pipe(
+    return this.backendService.logout().pipe(
       finalize(() => {
         this.purgeAuth();
       })
