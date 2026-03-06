@@ -1,0 +1,110 @@
+<div class="flex h-screen bg-peacock-dark overflow-hidden">
+  <!-- Sidebar -->
+  <app-sidebar class="w-64 shrink-0"></app-sidebar>
+
+  <!-- Main Content -->
+  <main class="flex-1 overflow-y-auto p-8">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold text-white mb-2">My Profile</h1>
+      <p class="text-gray-400">Manage your account settings and appearance</p>
+    </header>
+
+    @if (isLoading()) {
+      <div class="flex justify-center py-20">
+        <svg class="animate-spin h-10 w-10 text-peacock-teal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+    } @else {
+      <div class="max-w-3xl animate-fade-in">
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-8 shadow-xl backdrop-blur-sm">
+          <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="space-y-8">
+            <!-- Avatar Upload Section -->
+            <div class="flex flex-col md:flex-row items-center gap-8 pb-8 border-b border-white/10">
+              <div class="relative group">
+                <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-peacock-teal/30 bg-peacock-dark">
+                  <img [src]="avatarPreview || 'assets/images/avatar_default_placeholder.png'" 
+                       class="w-full h-full object-cover" 
+                       alt="Profile Avatar">
+                </div>
+                <label for="avatar-upload" class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <input id="avatar-upload" type="file" class="hidden" (change)="onFileSelected($event)" accept="image/*">
+                </label>
+              </div>
+              
+              <div class="flex-1 text-center md:text-left">
+                <h3 class="text-xl font-semibold text-white mb-2">Profile Picture</h3>
+                <p class="text-gray-400 text-sm mb-4">Click the image to upload a new avatar. JPG or PNG, max 5MB.</p>
+                @if (selectedAvatar) {
+                  <span class="text-xs text-peacock-teal bg-peacock-teal/10 px-3 py-1 rounded-full border border-peacock-teal/20">
+                    New file selected: {{ selectedAvatar.name }}
+                  </span>
+                }
+              </div>
+            </div>
+
+            <!-- Form Fields -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-300">Username</label>
+                <input type="text" formControlName="username" 
+                       class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:ring-2 focus:ring-peacock-teal/50 focus:border-peacock-teal transition-all outline-none"
+                       placeholder="Your username">
+                @if (profileForm.get('username')?.errors?.['required'] && profileForm.get('username')?.touched) {
+                  <p class="text-red-400 text-xs mt-1">Username is required</p>
+                }
+              </div>
+
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-300">Email Address</label>
+                <input type="email" formControlName="email" 
+                       class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:ring-2 focus:ring-peacock-teal/50 focus:border-peacock-teal transition-all outline-none"
+                       placeholder="name@example.com">
+                @if (profileForm.get('email')?.errors?.['email'] && profileForm.get('email')?.touched) {
+                  <p class="text-red-400 text-xs mt-1">Enter a valid email</p>
+                }
+              </div>
+
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-300">New Password (optional)</label>
+                <input type="password" formControlName="password" 
+                       class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:ring-2 focus:ring-peacock-teal/50 focus:border-peacock-teal transition-all outline-none"
+                       placeholder="••••••••">
+                @if (profileForm.get('password')?.errors?.['minlength'] && profileForm.get('password')?.touched) {
+                  <p class="text-red-400 text-xs mt-1">Password must be at least 6 characters</p>
+                }
+              </div>
+
+              <div class="md:col-span-2 space-y-2">
+                <label class="block text-sm font-medium text-gray-300">Bio</label>
+                <textarea formControlName="bio" rows="4"
+                          class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:ring-2 focus:ring-peacock-teal/50 focus:border-peacock-teal transition-all outline-none resize-none"
+                          placeholder="Tell us something about yourself..."></textarea>
+              </div>
+            </div>
+
+            <div class="pt-6 flex justify-end">
+              <button type="submit" [disabled]="!profileForm.valid || isSaving()"
+                      class="px-8 py-3 bg-peacock-teal hover:bg-peacock-teal/80 disabled:opacity-50 text-white font-bold rounded-xl transition-all shadow-lg shadow-peacock-teal/20 flex items-center gap-2">
+                @if (isSaving()) {
+                  <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Saving Changes...
+                } @else {
+                  Update Profile
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    }
+  </main>
+</div>

@@ -45,6 +45,14 @@ export interface UserProfileModel {
   roles: Role[];
 }
 
+export interface UpdatedProfile {
+  username: string;
+  email: string;
+  password: string;
+  bio: string;
+  avatarImage: File;
+}
+
 export enum UserRole {
   USER = 'USER',
   DEVELOPER = 'DEVELOPER',

@@ -1,0 +1,59 @@
+<div class="flex h-screen bg-peacock-dark overflow-hidden">
+  <!-- Sidebar -->
+  <app-sidebar class="w-64 shrink-0"></app-sidebar>
+
+  <!-- Main Content -->
+  <main class="flex-1 overflow-y-auto p-8">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold text-white mb-2">Purchased Games</h1>
+      <p class="text-gray-400">Your collection of games</p>
+    </header>
+
+    <section>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        @if (games$ | async; as gamePage) {
+          @if (gamePage.content.length > 0) {
+            @for (game of gamePage.content; track game.id) {
+              <div class="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:transform hover:scale-[1.02] transition-all duration-300 hover:shadow-xl hover:shadow-peacock-teal/10 group flex flex-col h-full">
+                <!-- Game Image -->
+                <div class="relative aspect-video overflow-hidden">
+                  <img [src]="game.imageUrl" [alt]="game.title" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                </div>
+
+                <!-- Game Info -->
+                <div class="p-4 flex flex-col grow">
+                  <h3 class="text-lg font-bold text-white truncate mb-4" [title]="game.title">{{ game.title }}</h3>
+
+                  <!-- Action Button -->
+                  <button class="w-full mt-auto py-2 bg-peacock-teal hover:bg-peacock-teal/80 text-white font-bold rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Play Now
+                  </button>
+                </div>
+              </div>
+            }
+          } @else {
+            <div class="col-span-full text-center py-12 border-2 border-dashed border-white/10 rounded-lg">
+              <p class="text-gray-400 mb-4">You haven't purchased any games yet.</p>
+              <a routerLink="/home" class="text-peacock-teal hover:text-peacock-light-teal underline cursor-pointer">Browse Store</a>
+            </div>
+          }
+        } @else {
+           <!-- Loading Skeletons -->
+           @for (i of [1, 2, 3, 4]; track i) {
+             <div class="bg-white/5 rounded-xl overflow-hidden animate-pulse h-64">
+               <div class="h-32 bg-white/10"></div>
+               <div class="p-4 space-y-3">
+                 <div class="h-6 bg-white/10 rounded w-3/4"></div>
+                 <div class="h-10 bg-white/10 rounded w-full mt-4"></div>
+               </div>
+             </div>
+           }
+        }
+      </div>
+    </section>
+  </main>
+</div>

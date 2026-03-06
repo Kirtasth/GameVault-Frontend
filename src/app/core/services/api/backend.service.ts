@@ -5,11 +5,12 @@ import {
   AuthResponseModel,
   CredentialsModel,
   RefreshTokenRequestModel,
-  RegistrationModel,
+  RegistrationModel, UpdatedProfile,
   UserProfileModel
 } from '../../models/user.model';
 import {Observable} from 'rxjs';
-import {NewDeveloperModel, NewGameModel} from '../../models/catalog.model';
+import {CustomGameIds, GamePage, NewDeveloperModel, NewGameModel} from '../../models/catalog.model';
+import {UpdateCart} from '../../models/cart.model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +22,7 @@ export class BackendService {
   private readonly authUrl = environment.backendUrl + "/auth";
   private readonly catalogUrl = environment.backendUrl + "/catalog";
   private readonly usersUrl = environment.backendUrl + "/users";
+  private readonly cartUrl = environment.backendUrl + "/cart";
 
   login(credentialsModel: CredentialsModel): Observable<AuthResponseModel> {
     return this.http.post<AuthResponseModel>(`${this.authUrl}/login`, credentialsModel);
@@ -49,6 +51,19 @@ export class BackendService {
     return this.http.get<UserProfileModel>(`${this.usersUrl}/${userId}`);
   }
 
+  updateUserProfile(userId: number, updatedUser: UpdatedProfile): Observable<UserProfileModel> {
+    const formData = new FormData();
+    formData.append('username', updatedUser.username);
+    formData.append('email', updatedUser.email);
+    formData.append('password', updatedUser.password);
+    formData.append('bio', updatedUser.bio);
+    if (updatedUser.avatarImage) {
+      formData.append('avatarImage', updatedUser.avatarImage);
+    }
+
+    return this.http.put<UserProfileModel>(`${this.usersUrl}/${userId}`, formData);
+  }
+
   registerDeveloper(developer: NewDeveloperModel): Observable<any> {
     return this.http.post(`${this.catalogUrl}/developer`, developer);
   }
@@ -67,4 +82,34 @@ export class BackendService {
   getGames(): Observable<any> {
     return this.http.get(`${this.catalogUrl}`);
   }
+
+  getMyGames(): Observable<any> {
+    return this.http.get(`${this.catalogUrl}/my-games`);
+  }
+
+  getPurchasedGames(): Observable<any> {
+    return this.http.get(`${this.catalogUrl}/purchased-games`);
+  }
+
+  getGamesFromIds(gameIds: CustomGameIds): Observable<GamePage> {
+    return this.http.post<GamePage>(`${this.catalogUrl}/custom-game-list`, gameIds);
+  }
+
+  getMyCart(): Observable<any> {
+    return this.http.get(`${this.cartUrl}`);
+  }
+
+  addToCart(updateCart: UpdateCart): Observable<any> {
+    return this.http.post(`${this.cartUrl}`, updateCart);
+  }
+
+  removeFromCart(itemId: number): Observable<any> {
+    return this.http.delete(`${this.cartUrl}/items/${itemId}`);
+  }
+
+  clearCart(): Observable<any> {
+    return this.http.delete(`${this.cartUrl}`);
+  }
+
+
 }

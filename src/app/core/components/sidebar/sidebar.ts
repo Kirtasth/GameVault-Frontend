@@ -1,9 +1,10 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {Router, RouterModule} from '@angular/router';
-import {AuthService} from '../../services/auth.service';
-import {CatalogService} from '../../services/catalog.service';
-import {catchError, Observable, of} from 'rxjs';
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { CatalogService } from '../../services/catalog.service';
+import { UserService } from '../../services/user.service';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -14,19 +15,28 @@ import {catchError, Observable, of} from 'rxjs';
 })
 export class Sidebar implements OnInit {
   isCollapsed = false;
-  isDeveloper$: Observable<boolean> = of(false);
-  private readonly authService = inject(AuthService);
+
   private readonly catalogService = inject(CatalogService);
+  private readonly userService = inject(UserService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly cartService = inject(CartService);
+
+  isDeveloper = this.catalogService.isDeveloper;
+  userProfile = this.userService.userProfile;
+  cartItemCount = this.cartService.totalItems;
 
   ngOnInit() {
+    // If we're authenticated but don't know the dev status yet, fetch it
     if (this.authService.isAuthenticated()) {
-      this.isDeveloper$ = this.catalogService.isUserDeveloper().pipe(
-        catchError((err) => {
-          console.error(err);
-          return of(false);
-        })
-      );
+      if (this.isDeveloper() === null) {
+        this.catalogService.isUserDeveloper().subscribe();
+      }
+
+      // Also fetch user profile for avatar/username in sidebar if not already loaded
+      if (this.userProfile() === null) {
+        this.userService.fetchProfile().subscribe();
+      }
     }
   }
 
@@ -37,14 +47,15 @@ export class Sidebar implements OnInit {
   logout() {
     this.authService.logout().subscribe({
       next: () => {
-        this.isDeveloper$ = of(false);
+        this.catalogService.clearCache();
+        this.userService.clearProfile();
         this.router.navigate(['/login']).then();
       },
       error: (err) => {
         console.error(err);
-        // Even if the backend call fails, we should probably clear local storage and redirect
-        this.isDeveloper$ = of(false);
-        localStorage.clear();
+        this.catalogService.clearCache();
+        this.userService.clearProfile();
+        this.authService.purgeAuth();
         this.router.navigate(['/login']).then();
       }
     });

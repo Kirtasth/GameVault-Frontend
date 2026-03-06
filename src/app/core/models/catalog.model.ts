@@ -37,3 +37,7 @@ export interface GamePage {
   content: Game[];
   page: Page;
 }
+
+export interface CustomGameIds {
+  ids: number[];
+}

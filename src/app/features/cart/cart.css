@@ -1,0 +1,14 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.cart-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Custom styles for quantity buttons to ensure consistent size */
+.min-w-\[2rem\] {
+  min-width: 2rem;
+}
