@@ -3,28 +3,28 @@
 
   <form [formGroup]="uploadGameForm" (ngSubmit)="onSubmit()" class="space-y-6">
     <div>
-      <label class="block text-sm font-medium text-gray-300 mb-2">Game Title</label>
-      <input type="text" formControlName="title" class="w-full rounded-lg bg-white/5 border border-white/10 focus:border-peacock-teal focus:ring-1 focus:ring-peacock-teal text-white placeholder-gray-500 p-3 transition-colors" placeholder="Enter game title">
+      <label for="title" class="block text-sm font-medium text-gray-300 mb-2">Game Title</label>
+      <input id="title" type="text" formControlName="title" class="w-full rounded-lg bg-white/5 border border-white/10 focus:border-peacock-teal focus:ring-1 focus:ring-peacock-teal text-white placeholder-gray-500 p-3 transition-colors" placeholder="Enter game title">
     </div>
 
     <div>
-      <label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
-      <textarea formControlName="description" class="w-full rounded-lg bg-white/5 border border-white/10 focus:border-peacock-teal focus:ring-1 focus:ring-peacock-teal text-white placeholder-gray-500 p-3 transition-colors" rows="4" placeholder="Enter game description"></textarea>
+      <label for="description" class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+      <textarea id="description" formControlName="description" class="w-full rounded-lg bg-white/5 border border-white/10 focus:border-peacock-teal focus:ring-1 focus:ring-peacock-teal text-white placeholder-gray-500 p-3 transition-colors" rows="4" placeholder="Enter game description"></textarea>
     </div>
 
     <div class="grid grid-cols-2 gap-4">
       <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">Price ($)</label>
-        <input type="number" formControlName="price" class="w-full rounded-lg bg-white/5 border border-white/10 focus:border-peacock-teal focus:ring-1 focus:ring-peacock-teal text-white placeholder-gray-500 p-3 transition-colors" placeholder="0.00">
+        <label for="price" class="block text-sm font-medium text-gray-300 mb-2">Price ($)</label>
+        <input id="price" type="number" formControlName="price" class="w-full rounded-lg bg-white/5 border border-white/10 focus:border-peacock-teal focus:ring-1 focus:ring-peacock-teal text-white placeholder-gray-500 p-3 transition-colors" placeholder="0.00">
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">Release Date</label>
-        <input type="date" formControlName="releaseDate" class="w-full rounded-lg bg-white/5 border border-white/10 focus:border-peacock-teal focus:ring-1 focus:ring-peacock-teal text-white placeholder-gray-500 p-3 transition-colors">
+        <label for="releaseDate" class="block text-sm font-medium text-gray-300 mb-2">Release Date</label>
+        <input id="releaseDate" type="date" formControlName="releaseDate" class="w-full rounded-lg bg-white/5 border border-white/10 focus:border-peacock-teal focus:ring-1 focus:ring-peacock-teal text-white placeholder-gray-500 p-3 transition-colors">
       </div>
     </div>
 
     <div>
-      <label class="block text-sm font-medium text-gray-300 mb-2">Game Image</label>
+      <label for="file-upload" class="block text-sm font-medium text-gray-300 mb-2">Game Image</label>
       <div class="flex justify-center px-6 pt-5 pb-6 border-2 border-white/10 border-dashed rounded-lg hover:border-peacock-teal/50 transition-colors bg-white/5">
         <div class="space-y-2 text-center">
           <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">

@@ -52,6 +52,8 @@
             @for (game of gamePage.content; track game.id) {
               <div
                 (click)="openPreview(game)"
+                (keydown.enter)="openPreview(game)"
+                tabindex="0"
                 class="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:transform hover:scale-[1.02] transition-all duration-300 hover:shadow-xl hover:shadow-peacock-teal/10 group flex flex-col h-full cursor-pointer">
                 <!-- Game Image -->
                 <div class="relative aspect-video overflow-hidden">
@@ -122,6 +124,6 @@
 
   <app-game-preview
     [game]="selectedGame"
-    (close)="closePreview()">
+    (closeModal)="closePreview()">
   </app-game-preview>
 </div>

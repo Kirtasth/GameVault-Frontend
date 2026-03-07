@@ -1,7 +1,7 @@
 import { Component, EventEmitter, inject, OnInit, Output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CatalogService } from '../../../core/services/catalog.service';
-import { Game } from '../../../core/models/catalog.model';
+import { Game, GamePage } from '../../../core/models/catalog.model';
 import { timeout, catchError, throwError } from 'rxjs';
 
 @Component({
@@ -29,7 +29,7 @@ export class MyGames implements OnInit {
     console.log('--- loadGames started ---');
     this.isLoading.set(true);
     this.errorMessage.set(null);
-    
+
     try {
       this.catalogService.getMyGames().pipe(
         timeout(10000),
@@ -38,18 +38,16 @@ export class MyGames implements OnInit {
           return throwError(() => err);
         })
       ).subscribe({
-        next: (response: any) => {
+        next: (response: GamePage) => {
           console.log('--- Data received in component ---', response);
-          
+
           let gameList: Game[] = [];
           if (response && response.content) {
             gameList = response.content || [];
-          } else if (Array.isArray(response)) {
-            gameList = response;
           } else {
             console.warn('Unexpected response format:', response);
           }
-          
+
           this.games.set(gameList);
           this.isLoading.set(false);
           console.log('isLoading signal set to false. Current value:', this.isLoading());

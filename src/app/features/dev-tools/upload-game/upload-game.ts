@@ -13,7 +13,7 @@ import { NewGameModel } from '../../../core/models/catalog.model';
 })
 export class UploadGame {
   @Output() gameCreated = new EventEmitter<void>();
-  
+
   uploadGameForm: FormGroup;
   selectedFile: File | null = null;
   isSubmitting = false;
@@ -30,10 +30,10 @@ export class UploadGame {
     });
   }
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
     }
   }
 

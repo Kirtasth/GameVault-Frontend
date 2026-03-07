@@ -22,9 +22,9 @@ export class DeveloperRegistration implements OnInit {
   protected devRegisterForm!: FormGroup;
   protected devRegisterModel!: NewDeveloperModel;
   protected userId: number | null = null;
-  protected submitted: boolean = false;
-  protected loading: boolean = false;
-  protected error: string = '';
+  protected submitted = false;
+  protected loading = false;
+  protected error = '';
 
   ngOnInit(): void {
     this.devRegisterForm = new FormGroup({

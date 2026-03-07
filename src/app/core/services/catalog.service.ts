@@ -22,7 +22,7 @@ export class CatalogService {
     );
   }
 
-  registerDeveloper(developer: NewDeveloperModel): Observable<any> {
+  registerDeveloper(developer: NewDeveloperModel): Observable<unknown> {
     return this.backendService.registerDeveloper(developer).pipe(
       tap(() => this.isDeveloperSignal.set(true))
     );
@@ -54,7 +54,7 @@ export class CatalogService {
     this.isDeveloperSignal.set(null);
   }
 
-  createGame(game: NewGameModel): Observable<any> {
+  createGame(game: NewGameModel): Observable<unknown> {
     return this.backendService.createGame(game);
   }
 

@@ -13,14 +13,18 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   private readonly router = inject(Router);
 
   canActivate(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _route: ActivatedRouteSnapshot,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _state: RouterStateSnapshot
   ): boolean | Observable<boolean> | Promise<boolean> {
     return this.checkAuth();
   }
 
   canActivateChild(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _childRoute: ActivatedRouteSnapshot,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _state: RouterStateSnapshot
   ): boolean | Observable<boolean> | Promise<boolean> {
     return this.checkAuth();

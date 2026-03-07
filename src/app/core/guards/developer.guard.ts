@@ -14,7 +14,9 @@ export class DeveloperGuard implements CanActivate {
   private readonly router = inject(Router);
 
   canActivate(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _route: ActivatedRouteSnapshot,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _state: RouterStateSnapshot
   ): Observable<boolean> | boolean {
     if (!this.authService.isAuthenticated()) {

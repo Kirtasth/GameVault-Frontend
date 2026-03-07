@@ -11,7 +11,7 @@ export class AuthService {
 
   private readonly backendService = inject(BackendService);
 
-  login(credentials: CredentialsModel): Observable<any> {
+  login(credentials: CredentialsModel): Observable<unknown> {
     return this.backendService.login(credentials).pipe(
       map((response: AuthResponseModel) => {
         localStorage.setItem(USER_ID_STORAGE_KEY, String(response.userId))
@@ -23,7 +23,7 @@ export class AuthService {
     );
   }
 
-  register(registration: RegistrationModel): Observable<any> {
+  register(registration: RegistrationModel): Observable<unknown> {
     return this.backendService.register(registration);
   }
 
@@ -47,7 +47,7 @@ export class AuthService {
     return !!this.getToken();
   }
 
-  logout(): Observable<any> {
+  logout(): Observable<unknown> {
     return this.backendService.logout().pipe(
       finalize(() => {
         this.purgeAuth();
@@ -61,7 +61,7 @@ export class AuthService {
     localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
   }
 
-  refreshToken(): Observable<any> {
+  refreshToken(): Observable<AuthResponseModel> {
     const refreshToken = this.getRefreshToken();
     if (!refreshToken) {
       return throwError(() => new Error('No refresh token available'));

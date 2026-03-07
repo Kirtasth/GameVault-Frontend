@@ -83,7 +83,7 @@ export class CartService {
 
     if (previousCart) {
         const existingItemIndex = previousCart.items.findIndex(item => item.game.id === game.id);
-        let newItems = [...previousCart.items];
+        const newItems = [...previousCart.items];
 
         if (existingItemIndex > -1) {
             const item = newItems[existingItemIndex];

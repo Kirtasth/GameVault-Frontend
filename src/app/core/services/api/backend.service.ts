@@ -10,7 +10,7 @@ import {
 } from '../../models/user.model';
 import {Observable} from 'rxjs';
 import {CustomGameIds, GamePage, NewDeveloperModel, NewGameModel} from '../../models/catalog.model';
-import {UpdateCart} from '../../models/cart.model';
+import {Cart, UpdateCart} from '../../models/cart.model';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +28,7 @@ export class BackendService {
     return this.http.post<AuthResponseModel>(`${this.authUrl}/login`, credentialsModel);
   }
 
-  register(registration: RegistrationModel): Observable<any> {
+  register(registration: RegistrationModel): Observable<unknown> {
     return this.http.post(`${this.authUrl}/register`, registration);
   }
 
@@ -38,7 +38,7 @@ export class BackendService {
     })
   }
 
-  logout(): Observable<any> {
+  logout(): Observable<unknown> {
     return this.http.post(`${this.authUrl}/logout`, {});
   }
 
@@ -64,11 +64,11 @@ export class BackendService {
     return this.http.put<UserProfileModel>(`${this.usersUrl}/${userId}`, formData);
   }
 
-  registerDeveloper(developer: NewDeveloperModel): Observable<any> {
+  registerDeveloper(developer: NewDeveloperModel): Observable<unknown> {
     return this.http.post(`${this.catalogUrl}/developer`, developer);
   }
 
-  createGame(game: NewGameModel): Observable<any> {
+  createGame(game: NewGameModel): Observable<unknown> {
     const formData = new FormData();
     formData.append('title', game.title);
     formData.append('description', game.description);
@@ -79,35 +79,35 @@ export class BackendService {
     return this.http.post(`${this.catalogUrl}`, formData);
   }
 
-  getGames(): Observable<any> {
-    return this.http.get(`${this.catalogUrl}`);
+  getGames(): Observable<GamePage> {
+    return this.http.get<GamePage>(`${this.catalogUrl}`);
   }
 
-  getMyGames(): Observable<any> {
-    return this.http.get(`${this.catalogUrl}/my-games`);
+  getMyGames(): Observable<GamePage> {
+    return this.http.get<GamePage>(`${this.catalogUrl}/my-games`);
   }
 
-  getPurchasedGames(): Observable<any> {
-    return this.http.get(`${this.catalogUrl}/purchased-games`);
+  getPurchasedGames(): Observable<GamePage> {
+    return this.http.get<GamePage>(`${this.catalogUrl}/purchased-games`);
   }
 
   getGamesFromIds(gameIds: CustomGameIds): Observable<GamePage> {
     return this.http.post<GamePage>(`${this.catalogUrl}/custom-game-list`, gameIds);
   }
 
-  getMyCart(): Observable<any> {
-    return this.http.get(`${this.cartUrl}`);
+  getMyCart(): Observable<Cart> {
+    return this.http.get<Cart>(`${this.cartUrl}`);
   }
 
-  addToCart(updateCart: UpdateCart): Observable<any> {
-    return this.http.post(`${this.cartUrl}`, updateCart);
+  addToCart(updateCart: UpdateCart): Observable<Cart> {
+    return this.http.post<Cart>(`${this.cartUrl}`, updateCart);
   }
 
-  removeFromCart(itemId: number): Observable<any> {
+  removeFromCart(itemId: number): Observable<unknown> {
     return this.http.delete(`${this.cartUrl}/items/${itemId}`);
   }
 
-  clearCart(): Observable<any> {
+  clearCart(): Observable<unknown> {
     return this.http.delete(`${this.cartUrl}`);
   }
 

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
@@ -17,11 +17,11 @@ export class Login {
   loading = false;
   error = '';
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private authService: AuthService,
-    private router: Router
-  ) {
+  private formBuilder = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  constructor() {
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]]
@@ -39,9 +39,9 @@ export class Login {
     this.loading = true;
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
-        this.router.navigate(['']); // Navigate to home/dashboard
+        this.router.navigate(['']).then(); // Navigate to home/dashboard
       },
-      error: (err) => {
+      error: () => {
         this.error = 'Invalid email or password';
         this.loading = false;
       },

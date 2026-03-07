@@ -55,13 +55,16 @@ export class Profile implements OnInit {
     });
   }
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
       this.selectedAvatar = file;
       const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.avatarPreview = e.target.result;
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        if (e.target?.result) {
+          this.avatarPreview = e.target.result as string;
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -70,7 +73,7 @@ export class Profile implements OnInit {
   onSubmit() {
     if (this.profileForm.valid) {
       this.isSaving.set(true);
-      
+
       const updatedProfile: UpdatedProfile = {
         username: this.profileForm.value.username,
         email: this.profileForm.value.email,
@@ -78,7 +81,7 @@ export class Profile implements OnInit {
         bio: this.profileForm.value.bio,
         avatarImage: this.selectedAvatar as File
       };
-      
+
       this.userService.updateProfile(updatedProfile).subscribe({
         next: () => {
           this.isSaving.set(false);

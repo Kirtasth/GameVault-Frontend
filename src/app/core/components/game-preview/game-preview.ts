@@ -12,7 +12,7 @@ import { CartService } from '../../services/cart.service';
 })
 export class GamePreview {
   @Input() game: Game | null = null;
-  @Output() close = new EventEmitter<void>();
+  @Output() closeModal = new EventEmitter<void>();
 
   private cartService = inject(CartService);
 
@@ -21,7 +21,7 @@ export class GamePreview {
   onClose() {
     this.isClosing = true;
     setTimeout(() => {
-      this.close.emit();
+      this.closeModal.emit();
       this.isClosing = false;
     }, 300); // Match animation duration
   }
