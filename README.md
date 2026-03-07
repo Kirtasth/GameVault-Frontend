@@ -1,59 +1,65 @@
-# GameVaultFrontend
+# 🎮 GameVault
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.0.
+> A powerful and easy-to-use game key store simulation.
 
-## Development server
+![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Stripe](https://img.shields.io/badge/Stripe-626CD9?style=for-the-badge&logo=Stripe&logoColor=white)
 
-To start a local development server, run:
+---
 
-```bash
-ng serve
-```
+## 📖 About The Project
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+**GameVault** is a personal project designed to simulate a modern digital game store. The goal is to build a platform that is intuitive for users while offering powerful features for developers and administrators.
 
-## Code scaffolding
+This repository focuses on the **Frontend** of the application.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### 🔑 Key Features & Rules
 
-```bash
-ng generate component component-name
-```
+*   **User Roles**:
+    *   👤 **USER**: Can log in/out, browse the catalog, and purchase games via Stripe.
+    *   🛠️ **DEVELOPER**: Inherits User permissions but can also publish new games (upload images, descriptions, etc.).
+    *   🛡️ **ADMIN**: Has full control and permissions over the entire application.
+*   **Payments**: Integrated securely with the **Stripe API**.
+*   **Data**: All data is managed by a dedicated Backend API.
+*   **Security**: Automatic redirection for unknown routes (Login for guests, Dashboard for authenticated users).
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
-```
+## 🛠️ Tech Stack
 
-## Building
+*   **Framework**: [Angular 21](https://angular.io/)
+*   **Styling**: [TailwindCSS](https://tailwindcss.com/)
 
-To build the project run:
+---
 
-```bash
-ng build
-```
+## 🎨 Design & Style
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+The application features a clean, simple, and modern interface, accented with a **Peacock** color palette to ensure a pleasant user experience.
 
-## Running unit tests
+---
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## 📱 Pages
 
-```bash
-ng test
-```
+*   🔐 **Authentication**
+    *   Register
+    *   Login
+*   👤 **User Area**
+    *   Dashboard
+    *   Catalog
+*   🛠️ **Developer Area**
+    *   Dashboard (Game Management)
+*   🛡️ **Admin Area**
+    *   Dashboard (System Administration)
 
-## Running end-to-end tests
+---
 
-For end-to-end (e2e) testing, run:
+## 🚀 Getting Started
 
-```bash
-ng e2e
-```
+### Development server
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-## Additional Resources
+### Build
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
