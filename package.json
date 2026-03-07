@@ -8,7 +8,8 @@
     "build:pre": "ng build --configuration pre",
     "build:pro": "ng build --configuration pro",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "lint": "ng lint"
   },
   "prettier": {
     "printWidth": 100,
