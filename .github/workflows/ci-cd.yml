@@ -8,7 +8,7 @@ on:
   push:
     branches:
       - pre
-      - pro
+#      - pro We are deploying only on preview for the moment
 
 jobs:
   Deploy-to-Vercel:
