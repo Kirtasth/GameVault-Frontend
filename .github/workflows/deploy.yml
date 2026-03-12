@@ -32,3 +32,5 @@ jobs:
         uses: actions/checkout@v4
       - name: Build Docker Image
         run: docker build -t gamevault-frontend:latest .
+      - name: Deploy the Container
+        run: docker compose -f /infra/compose.yaml up -d --no-deps --force-recreate frontend
