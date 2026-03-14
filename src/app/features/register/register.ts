@@ -11,6 +11,7 @@ import {
 import {RouterLink, Router} from '@angular/router';
 import {AuthService} from '../../core/services/auth.service';
 import {finalize, switchMap} from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
@@ -76,8 +77,14 @@ export class Register implements OnInit {
         next: () => {
           this.router.navigate(['home']).then();
         },
-        error: () => {
-          this.error = 'Registration failed. Please try again.';
+        error: (err: HttpErrorResponse) => {
+          if (err.status === 409) {
+            this.error = 'This email is already registered.';
+          } else if (err.status === 500) {
+            this.error = 'A server error occurred. Please try again later.';
+          } else {
+            this.error = 'Registration failed. Please try again.';
+          }
         }
       });
   }

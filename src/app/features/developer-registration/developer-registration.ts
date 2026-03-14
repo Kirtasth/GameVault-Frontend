@@ -6,6 +6,7 @@ import {CatalogService} from '../../core/services/catalog.service';
 import {finalize} from 'rxjs';
 import {AuthService} from '../../core/services/auth.service';
 import {NewDeveloperModel} from '../../core/models/catalog.model';
+import {UserService} from '../../core/services/user.service';
 
 @Component({
   selector: 'app-developer-registration',
@@ -18,6 +19,7 @@ export class DeveloperRegistration implements OnInit {
   private readonly router: Router = inject(Router);
   private readonly catalogService: CatalogService = inject(CatalogService);
   private readonly authService: AuthService = inject(AuthService);
+  private readonly userService: UserService = inject(UserService);
 
   protected devRegisterForm!: FormGroup;
   protected devRegisterModel!: NewDeveloperModel;
@@ -65,7 +67,9 @@ export class DeveloperRegistration implements OnInit {
       )
       .subscribe({
         next: () => {
-          this.router.navigate(['home']).then();
+          this.userService.fetchProfile().subscribe(() => {
+            this.router.navigate(['home']).then();
+          });
         },
         error: () => {
 
