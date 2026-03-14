@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -41,8 +42,14 @@ export class Login {
       next: () => {
         this.router.navigate(['']).then(); // Navigate to home/dashboard
       },
-      error: () => {
-        this.error = 'Invalid email or password';
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 401) {
+          this.error = 'Invalid email or password.';
+        } else if (err.status === 500) {
+          this.error = 'A server error occurred. Please try again later.';
+        } else {
+          this.error = 'An unexpected error occurred. Please try again.';
+        }
         this.loading = false;
       },
       complete: () => {
