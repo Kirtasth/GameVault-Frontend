@@ -158,8 +158,8 @@ export class CartService {
     if (!previousCart) return;
 
     const newItems = previousCart.items.map(i =>
-        i.id === item.id ? { ...item, quantity } : item
-    ) as CartItemWithGame[];
+      i.id === item.id ? { ...i, quantity } : i
+    );
 
     this._cart.set({ ...previousCart, items: newItems });
 
@@ -189,6 +189,17 @@ export class CartService {
     } catch (error) {
       console.error('Failed to clear cart. Reverting.', error);
       this._cart.set(previousCart);
+    }
+  }
+
+  async checkout() {
+    try {
+      const response = await firstValueFrom(this.backendService.checkout());
+      if (response && response.url) {
+        window.location.href = response.url;
+      }
+    } catch (error) {
+      console.error('Checkout failed', error);
     }
   }
 }

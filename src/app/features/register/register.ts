@@ -1,91 +1,87 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {
-  ReactiveFormsModule,
-  FormGroup,
-  Validators,
-  FormControl,
-  AbstractControl,
-  ValidationErrors
-} from '@angular/forms';
-import {RouterLink, Router} from '@angular/router';
-import {AuthService} from '../../core/services/auth.service';
-import {finalize, switchMap} from 'rxjs';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormField, form, required, email, minLength, validate, submit } from '@angular/forms/signals';
+import { RouterLink, Router } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
+import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, FormField, RouterLink],
   templateUrl: './register.html',
   styleUrl: './register.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Register implements OnInit {
 
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  protected registerForm!: FormGroup;
-  protected submitted = false;
-  protected loading = false;
-  protected error = '';
+  registerModel = signal({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    avatarUrl: '',
+    bio: ''
+  });
+
+  registerForm = form(this.registerModel, (s) => {
+    required(s.username, { message: 'Username is required' });
+    minLength(s.username, 3, { message: 'Username must be at least 3 characters' });
+    
+    required(s.email, { message: 'Email is required' });
+    email(s.email, { message: 'Invalid email format' });
+    
+    required(s.password, { message: 'Password is required' });
+    minLength(s.password, 6, { message: 'Password must be at least 6 characters' });
+    
+    required(s.confirmPassword, { message: 'Confirm password is required' });
+    
+    validate(s.confirmPassword, ({ valueOf }) => {
+      if (valueOf(s.password) !== valueOf(s.confirmPassword)) {
+        return { kind: 'mismatch', message: 'Passwords do not match' };
+      }
+      return undefined;
+    });
+  });
+
+  loading = signal(false);
+  error = signal('');
 
   ngOnInit(): void {
-    this.registerForm = new FormGroup({
-      username: new FormControl('', [Validators.required, Validators.minLength(3)]),
-      email: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [Validators.required, Validators.minLength(6)]),
-      confirmPassword: new FormControl('', [Validators.required]),
-      avatarUrl: new FormControl(''),
-      bio: new FormControl('')
-    }, {validators: this.passwordMatchValidator});
-
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['home']).then();
-      return;
     }
-  }
-
-  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
-    const password = control.get('password');
-    const confirmPassword = control.get('confirmPassword');
-
-    if (!password || !confirmPassword) {
-      return null;
-    }
-
-    return password.value === confirmPassword.value ? null : {mismatch: true};
   }
 
   onSubmit() {
-    this.submitted = true;
-    this.error = '';
+    this.error.set('');
 
-    if (this.registerForm.invalid) {
-      return;
-    }
+    submit(this.registerForm, async () => {
+      this.loading.set(true);
+      const { email, password } = this.registerModel();
 
-    this.loading = true;
-    const {email, password} = this.registerForm.value;
-
-    this.authService.register(this.registerForm.value)
-      .pipe(
-        switchMap(() => this.authService.login({email, password})),
-        finalize(() => this.loading = false)
-      )
-      .subscribe({
-        next: () => {
-          this.router.navigate(['home']).then();
-        },
-        error: (err: HttpErrorResponse) => {
+      try {
+        await firstValueFrom(this.authService.register(this.registerModel() as any));
+        await firstValueFrom(this.authService.login({ email, password }));
+        await this.router.navigate(['home']);
+      } catch (err) {
+        if (err instanceof HttpErrorResponse) {
           if (err.status === 409) {
-            this.error = 'This email is already registered.';
+            this.error.set('This email is already registered.');
           } else if (err.status === 500) {
-            this.error = 'A server error occurred. Please try again later.';
+            this.error.set('A server error occurred. Please try again later.');
           } else {
-            this.error = 'Registration failed. Please try again.';
+            this.error.set('Registration failed. Please try again.');
           }
+        } else {
+          this.error.set('An unexpected error occurred.');
         }
-      });
+      } finally {
+        this.loading.set(false);
+      }
+    });
   }
 }

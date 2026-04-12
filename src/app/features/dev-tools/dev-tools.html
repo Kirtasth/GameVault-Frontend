@@ -13,19 +13,19 @@
     <div class="flex space-x-4 mb-6 border-b border-white/10 pb-2">
       <button
         (click)="setActiveTab('my-games')"
-        [class.text-peacock-teal]="activeTab === 'my-games'"
-        [class.border-peacock-teal]="activeTab === 'my-games'"
-        [class.text-gray-400]="activeTab !== 'my-games'"
-        [class.border-transparent]="activeTab !== 'my-games'"
+        [class.text-peacock-teal]="activeTab() === 'my-games'"
+        [class.border-peacock-teal]="activeTab() === 'my-games'"
+        [class.text-gray-400]="activeTab() !== 'my-games'"
+        [class.border-transparent]="activeTab() !== 'my-games'"
         class="pb-2 px-4 font-medium border-b-2 transition-colors hover:text-white">
         My Games
       </button>
       <button
         (click)="setActiveTab('upload-game')"
-        [class.text-peacock-teal]="activeTab === 'upload-game'"
-        [class.border-peacock-teal]="activeTab === 'upload-game'"
-        [class.text-gray-400]="activeTab !== 'upload-game'"
-        [class.border-transparent]="activeTab !== 'upload-game'"
+        [class.text-peacock-teal]="activeTab() === 'upload-game'"
+        [class.border-peacock-teal]="activeTab() === 'upload-game'"
+        [class.text-gray-400]="activeTab() !== 'upload-game'"
+        [class.border-transparent]="activeTab() !== 'upload-game'"
         class="pb-2 px-4 font-medium border-b-2 transition-colors hover:text-white">
         Upload Game
       </button>
@@ -33,11 +33,11 @@
 
     <!-- Content -->
     <div class="mt-6">
-      @if (activeTab === 'my-games') {
+      @if (activeTab() === 'my-games') {
         <app-my-games (navigateToUpload)="setActiveTab('upload-game')"></app-my-games>
       }
 
-      @if (activeTab === 'upload-game') {
+      @if (activeTab() === 'upload-game') {
         <app-upload-game (gameCreated)="onGameCreated()"></app-upload-game>
       }
     </div>

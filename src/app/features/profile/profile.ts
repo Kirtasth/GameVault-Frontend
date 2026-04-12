@@ -1,35 +1,42 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormField, form, required, email, minLength, submit } from '@angular/forms/signals';
 import { Sidebar } from '../../core/components/sidebar/sidebar';
 import { UserService } from '../../core/services/user.service';
 import { UpdatedProfile } from '../../core/models/user.model';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
-  standalone: true,
-  imports: [CommonModule, Sidebar, ReactiveFormsModule],
+  imports: [CommonModule, Sidebar, FormField],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Profile implements OnInit {
-  private readonly fb = inject(FormBuilder);
   private readonly userService = inject(UserService);
 
-  profileForm: FormGroup;
+  profileModel = signal({
+    username: '',
+    email: '',
+    password: '',
+    bio: ''
+  });
+
+  profileForm = form(this.profileModel, (s) => {
+    required(s.username, { message: 'Username is required' });
+    minLength(s.username, 3, { message: 'Username must be at least 3 characters' });
+    
+    required(s.email, { message: 'Email is required' });
+    email(s.email, { message: 'Invalid email format' });
+    
+    minLength(s.password, 6, { message: 'Password must be at least 6 characters' });
+  });
+
   isSaving = signal(false);
   isLoading = signal(true);
-  selectedAvatar: File | null = null;
-  avatarPreview: string | null = null;
-
-  constructor() {
-    this.profileForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.minLength(6)]],
-      bio: ['']
-    });
-  }
+  selectedAvatar = signal<File | null>(null);
+  avatarPreview = signal<string | null>(null);
 
   ngOnInit() {
     this.loadProfile();
@@ -39,13 +46,13 @@ export class Profile implements OnInit {
     this.isLoading.set(true);
     this.userService.fetchProfile().subscribe({
       next: (profile) => {
-        this.profileForm.patchValue({
+        this.profileModel.set({
           username: profile.username,
           email: profile.email,
-          bio: profile.bio,
-          password: '' // Don't populate password
+          bio: profile.bio ?? '',
+          password: ''
         });
-        this.avatarPreview = profile.avatarUrl;
+        this.avatarPreview.set(profile.avatarUrl);
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -59,11 +66,11 @@ export class Profile implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      this.selectedAvatar = file;
+      this.selectedAvatar.set(file);
       const reader = new FileReader();
       reader.onload = (e: ProgressEvent<FileReader>) => {
         if (e.target?.result) {
-          this.avatarPreview = e.target.result as string;
+          this.avatarPreview.set(e.target.result as string);
         }
       };
       reader.readAsDataURL(file);
@@ -71,28 +78,22 @@ export class Profile implements OnInit {
   }
 
   onSubmit() {
-    if (this.profileForm.valid) {
+    submit(this.profileForm, async () => {
       this.isSaving.set(true);
+      try {
+        const updatedProfile: UpdatedProfile = {
+          ...this.profileModel(),
+          avatarImage: this.selectedAvatar() as File
+        };
 
-      const updatedProfile: UpdatedProfile = {
-        username: this.profileForm.value.username,
-        email: this.profileForm.value.email,
-        password: this.profileForm.value.password,
-        bio: this.profileForm.value.bio,
-        avatarImage: this.selectedAvatar as File
-      };
-
-      this.userService.updateProfile(updatedProfile).subscribe({
-        next: () => {
-          this.isSaving.set(false);
-          this.selectedAvatar = null;
-          this.profileForm.get('password')?.reset();
-        },
-        error: (err) => {
-          console.error('Error updating profile:', err);
-          this.isSaving.set(false);
-        }
-      });
-    }
+        await firstValueFrom(this.userService.updateProfile(updatedProfile));
+        this.selectedAvatar.set(null);
+        this.profileModel.update(m => ({ ...m, password: '' }));
+      } catch (err) {
+        console.error('Error updating profile:', err);
+      } finally {
+        this.isSaving.set(false);
+      }
+    });
   }
 }

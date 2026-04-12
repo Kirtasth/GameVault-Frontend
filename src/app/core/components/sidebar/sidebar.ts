@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -8,13 +8,13 @@ import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-sidebar',
-  standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './sidebar.html',
-  styleUrl: './sidebar.css'
+  styleUrl: './sidebar.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Sidebar implements OnInit {
-  isCollapsed = false;
+  isCollapsed = signal(false);
 
   private readonly catalogService = inject(CatalogService);
   private readonly userService = inject(UserService);
@@ -41,7 +41,7 @@ export class Sidebar implements OnInit {
   }
 
   toggleSidebar() {
-    this.isCollapsed = !this.isCollapsed;
+    this.isCollapsed.update(v => !v);
   }
 
   logout() {

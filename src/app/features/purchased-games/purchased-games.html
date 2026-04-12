@@ -11,7 +11,7 @@
 
     <section>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        @if (games$ | async; as gamePage) {
+        @if (gamesResource.value(); as gamePage) {
           @if (gamePage.content.length > 0) {
             @for (game of gamePage.content; track game.id) {
               <div class="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:transform hover:scale-[1.02] transition-all duration-300 hover:shadow-xl hover:shadow-peacock-teal/10 group flex flex-col h-full">
@@ -41,7 +41,7 @@
               <a routerLink="/home" class="text-peacock-teal hover:text-peacock-light-teal underline cursor-pointer">Browse Store</a>
             </div>
           }
-        } @else {
+        } @else if (gamesResource.isLoading()) {
            <!-- Loading Skeletons -->
            @for (i of [1, 2, 3, 4]; track i) {
              <div class="bg-white/5 rounded-xl overflow-hidden animate-pulse h-64">

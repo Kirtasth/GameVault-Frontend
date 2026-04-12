@@ -1,49 +1,57 @@
 import {Routes} from '@angular/router';
-import {Login} from './features/login/login';
-import {Register} from './features/register/register';
-import {Home} from './features/home/home';
-import {DeveloperRegistration} from './features/developer-registration/developer-registration';
 import {AuthGuard} from './core/guards/auth.guard';
-import {Cart} from './features/cart/cart';
-import {PurchasedGames} from './features/purchased-games/purchased-games';
 import {DeveloperGuard} from './core/guards/developer.guard';
 
 export const routes: Routes = [
   {
     path: 'login',
-    component: Login,
+    loadComponent: () => import('./features/login/login').then(m => m.Login),
     title: 'GameVault - Login'
   },
 
   { path: 'register',
-    component: Register,
+    loadComponent: () => import('./features/register/register').then(m => m.Register),
     title: 'GameVault - Register'
   },
 
   {
     path: 'home',
-    component: Home,
+    loadComponent: () => import('./features/home/home').then(m => m.Home),
     title: 'GameVault - Home',
     canActivate: [AuthGuard],
   },
 
   {
     path: 'cart',
-    component: Cart,
+    loadComponent: () => import('./features/cart/cart').then(m => m.Cart),
     title: 'GameVault - Cart',
     canActivate: [AuthGuard]
   },
 
   {
+    path: 'checkout/success',
+    loadComponent: () => import('./features/checkout/checkout-success').then(m => m.CheckoutSuccess),
+    title: 'GameVault - Payment Successful',
+    canActivate: [AuthGuard]
+  },
+
+  {
+    path: 'checkout/error',
+    loadComponent: () => import('./features/checkout/checkout-error').then(m => m.CheckoutError),
+    title: 'GameVault - Payment Failed',
+    canActivate: [AuthGuard]
+  },
+
+  {
     path: 'purchased-games',
-    component: PurchasedGames,
+    loadComponent: () => import('./features/purchased-games/purchased-games').then(m => m.PurchasedGames),
     title: 'GameVault - Purchased Games',
     canActivate: [AuthGuard]
   },
 
   {
     path: 'become-developer',
-    component: DeveloperRegistration,
+    loadComponent: () => import('./features/developer-registration/developer-registration').then(m => m.DeveloperRegistration),
     title: 'GameVault - Become a Developer',
     canActivate: [AuthGuard]
   },

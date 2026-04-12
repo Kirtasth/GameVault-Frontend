@@ -9,7 +9,7 @@ import {
   UserProfileModel
 } from '../../models/user.model';
 import {Observable} from 'rxjs';
-import {CustomGameIds, GamePage, NewDeveloperModel, NewGameModel} from '../../models/catalog.model';
+import {CustomGameIds, GameKeyResponse, GamePage, NewDeveloperModel, NewGameModel} from '../../models/catalog.model';
 import {Cart, UpdateCart} from '../../models/cart.model';
 
 @Injectable({
@@ -23,6 +23,7 @@ export class BackendService {
   private readonly catalogUrl = environment.backendUrl + "/catalog";
   private readonly usersUrl = environment.backendUrl + "/users";
   private readonly cartUrl = environment.backendUrl + "/cart";
+  private readonly checkoutUrl = environment.backendUrl + "/checkout";
 
   login(credentialsModel: CredentialsModel): Observable<AuthResponseModel> {
     return this.http.post<AuthResponseModel>(`${this.authUrl}/login`, credentialsModel);
@@ -95,6 +96,14 @@ export class BackendService {
     return this.http.post<GamePage>(`${this.catalogUrl}/custom-game-list`, gameIds);
   }
 
+  addKeysToGame(gameId: string, keys: string[]): Observable<unknown> {
+    return this.http.post(`${this.checkoutUrl}/games/${gameId}/keys`, { keys });
+  }
+
+  getGameKeys(gameId: string): Observable<GameKeyResponse[]> {
+    return this.http.get<GameKeyResponse[]>(`${this.checkoutUrl}/games/${gameId}/keys`);
+  }
+
   getMyCart(): Observable<Cart> {
     return this.http.get<Cart>(`${this.cartUrl}`);
   }
@@ -109,6 +118,10 @@ export class BackendService {
 
   clearCart(): Observable<unknown> {
     return this.http.delete(`${this.cartUrl}`);
+  }
+
+  checkout(): Observable<{ url: string }> {
+    return this.http.post<{ url: string }>(`${this.checkoutUrl}`, {});
   }
 
 

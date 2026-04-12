@@ -10,6 +10,7 @@ export interface Game {
   updatedAt: Date;
   tags: string[];
   statuses: string[];
+  keysAvailable: number;
 }
 
 export interface NewDeveloperModel {
@@ -40,4 +41,11 @@ export interface GamePage {
 
 export interface CustomGameIds {
   ids: number[];
+}
+
+export interface GameKeyResponse {
+  id: number;
+  keyValue: string;
+  isUsed: boolean;
+  createdAt: string;
 }

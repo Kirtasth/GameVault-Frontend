@@ -1,25 +1,25 @@
 <div class="bg-white/5 border border-white/10 p-6 rounded-xl max-w-2xl mx-auto">
   <h2 class="text-xl font-semibold mb-6 text-peacock-teal">Upload New Game</h2>
 
-  <form [formGroup]="uploadGameForm" (ngSubmit)="onSubmit()" class="space-y-6">
+  <form (submit)="onSubmit(); $event.preventDefault()" class="space-y-6">
     <div>
       <label for="title" class="block text-sm font-medium text-gray-300 mb-2">Game Title</label>
-      <input id="title" type="text" formControlName="title" class="w-full rounded-lg bg-white/5 border border-white/10 focus:border-peacock-teal focus:ring-1 focus:ring-peacock-teal text-white placeholder-gray-500 p-3 transition-colors" placeholder="Enter game title">
+      <input id="title" type="text" [formField]="uploadGameForm.title" class="w-full rounded-lg bg-white/5 border border-white/10 focus:border-peacock-teal focus:ring-1 focus:ring-peacock-teal text-white placeholder-gray-500 p-3 transition-colors" placeholder="Enter game title">
     </div>
 
     <div>
       <label for="description" class="block text-sm font-medium text-gray-300 mb-2">Description</label>
-      <textarea id="description" formControlName="description" class="w-full rounded-lg bg-white/5 border border-white/10 focus:border-peacock-teal focus:ring-1 focus:ring-peacock-teal text-white placeholder-gray-500 p-3 transition-colors" rows="4" placeholder="Enter game description"></textarea>
+      <textarea id="description" [formField]="uploadGameForm.description" class="w-full rounded-lg bg-white/5 border border-white/10 focus:border-peacock-teal focus:ring-1 focus:ring-peacock-teal text-white placeholder-gray-500 p-3 transition-colors" rows="4" placeholder="Enter game description"></textarea>
     </div>
 
     <div class="grid grid-cols-2 gap-4">
       <div>
         <label for="price" class="block text-sm font-medium text-gray-300 mb-2">Price ($)</label>
-        <input id="price" type="number" formControlName="price" class="w-full rounded-lg bg-white/5 border border-white/10 focus:border-peacock-teal focus:ring-1 focus:ring-peacock-teal text-white placeholder-gray-500 p-3 transition-colors" placeholder="0.00">
+        <input id="price" type="number" step="0.01" [formField]="uploadGameForm.price" class="w-full rounded-lg bg-white/5 border border-white/10 focus:border-peacock-teal focus:ring-1 focus:ring-peacock-teal text-white placeholder-gray-500 p-3 transition-colors" placeholder="0.00">
       </div>
       <div>
         <label for="releaseDate" class="block text-sm font-medium text-gray-300 mb-2">Release Date</label>
-        <input id="releaseDate" type="date" formControlName="releaseDate" class="w-full rounded-lg bg-white/5 border border-white/10 focus:border-peacock-teal focus:ring-1 focus:ring-peacock-teal text-white placeholder-gray-500 p-3 transition-colors">
+        <input id="releaseDate" type="date" [formField]="uploadGameForm.releaseDate" class="w-full rounded-lg bg-white/5 border border-white/10 focus:border-peacock-teal focus:ring-1 focus:ring-peacock-teal text-white placeholder-gray-500 p-3 transition-colors">
       </div>
     </div>
 
@@ -38,16 +38,16 @@
             <p class="pl-1">or drag and drop</p>
           </div>
           <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-          @if (selectedFile) {
-            <p class="text-sm text-peacock-teal mt-2">Selected: {{ selectedFile.name }}</p>
+          @if (selectedFile(); as file) {
+            <p class="text-sm text-peacock-teal mt-2">Selected: {{ file.name }}</p>
           }
         </div>
       </div>
     </div>
 
     <div class="pt-4">
-      <button type="submit" [disabled]="!uploadGameForm.valid || !selectedFile || isSubmitting" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-peacock-teal hover:bg-peacock-teal/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-peacock-teal transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed">
-        @if (isSubmitting) {
+      <button type="submit" [disabled]="uploadGameForm().invalid() || !selectedFile() || isSubmitting()" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-peacock-teal hover:bg-peacock-teal/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-peacock-teal transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed">
+        @if (isSubmitting()) {
           <span class="flex items-center">
             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

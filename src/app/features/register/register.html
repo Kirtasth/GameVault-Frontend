@@ -5,32 +5,27 @@
       <p class="text-gray-300">Join GameVault today</p>
     </div>
 
-    @if (error) {
+    @if (error()) {
       <div class="bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded-lg mb-6 text-sm text-center">
-        {{ error }}
+        {{ error() }}
       </div>
     }
 
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    <form (submit)="onSubmit(); $event.preventDefault()" class="space-y-6">
       <!-- Username -->
       <div>
         <label for="username" class="block text-sm font-medium text-gray-200 mb-1">Username</label>
         <input
           type="text"
           id="username"
-          formControlName="username"
+          [formField]="registerForm.username"
           class="w-full px-4 py-3 bg-white/5 border border-gray-600 rounded-lg focus:ring-2 focus:ring-peacock-teal focus:border-transparent text-white placeholder-gray-400 transition-all outline-none"
           placeholder="Enter your username"
-          [class.border-red-500]="submitted && registerForm.get('username')?.errors"
+          [class.border-red-500]="registerForm.username().touched() && registerForm.username().errors().length"
         />
-        @if (submitted && registerForm.get('username')?.errors) {
+        @if (registerForm.username().touched() && registerForm.username().errors().length) {
           <div class="text-red-400 text-xs mt-1">
-            @if (registerForm.get('username')?.hasError('required')) {
-              <span>Username is required</span>
-            }
-            @if (registerForm.get('username')?.hasError('minlength')) {
-              <span>Username must be at least 3 characters</span>
-            }
+            <span>{{ registerForm.username().errors()[0].message }}</span>
           </div>
         }
       </div>
@@ -41,19 +36,14 @@
         <input
           type="email"
           id="email"
-          formControlName="email"
+          [formField]="registerForm.email"
           class="w-full px-4 py-3 bg-white/5 border border-gray-600 rounded-lg focus:ring-2 focus:ring-peacock-teal focus:border-transparent text-white placeholder-gray-400 transition-all outline-none"
           placeholder="name@example.com"
-          [class.border-red-500]="submitted && registerForm.get('email')?.errors"
+          [class.border-red-500]="registerForm.email().touched() && registerForm.email().errors().length"
         />
-        @if (submitted && registerForm.get('email')?.errors) {
+        @if (registerForm.email().touched() && registerForm.email().errors().length) {
           <div class="text-red-400 text-xs mt-1">
-            @if (registerForm.get('email')?.hasError('required')) {
-              <span>Email is required</span>
-            }
-            @if (registerForm.get('email')?.hasError('email')) {
-              <span>Enter a valid email</span>
-            }
+            <span>{{ registerForm.email().errors()[0].message }}</span>
           </div>
         }
       </div>
@@ -64,19 +54,14 @@
         <input
           type="password"
           id="password"
-          formControlName="password"
+          [formField]="registerForm.password"
           class="w-full px-4 py-3 bg-white/5 border border-gray-600 rounded-lg focus:ring-2 focus:ring-peacock-teal focus:border-transparent text-white placeholder-gray-400 transition-all outline-none"
           placeholder="••••••••"
-          [class.border-red-500]="submitted && registerForm.get('password')?.errors"
+          [class.border-red-500]="registerForm.password().touched() && registerForm.password().errors().length"
         />
-        @if (submitted && registerForm.get('password')?.errors) {
+        @if (registerForm.password().touched() && registerForm.password().errors().length) {
           <div class="text-red-400 text-xs mt-1">
-            @if (registerForm.get('password')?.hasError('required')) {
-              <span>Password is required</span>
-            }
-            @if (registerForm.get('password')?.hasError('minlength')) {
-              <span>Password must be at least 6 characters</span>
-            }
+            <span>{{ registerForm.password().errors()[0].message }}</span>
           </div>
         }
       </div>
@@ -87,19 +72,14 @@
         <input
           type="password"
           id="confirmPassword"
-          formControlName="confirmPassword"
+          [formField]="registerForm.confirmPassword"
           class="w-full px-4 py-3 bg-white/5 border border-gray-600 rounded-lg focus:ring-2 focus:ring-peacock-teal focus:border-transparent text-white placeholder-gray-400 transition-all outline-none"
           placeholder="••••••••"
-          [class.border-red-500]="submitted && (registerForm.get('confirmPassword')?.errors || registerForm.hasError('mismatch'))"
+          [class.border-red-500]="registerForm.confirmPassword().touched() && registerForm.confirmPassword().errors().length"
         />
-        @if (submitted) {
+        @if (registerForm.confirmPassword().touched() && registerForm.confirmPassword().errors().length) {
           <div class="text-red-400 text-xs mt-1">
-            @if (registerForm.get('confirmPassword')?.hasError('required')) {
-              <span>Confirm password is required</span>
-            }
-            @if (registerForm.hasError('mismatch') && !registerForm.get('confirmPassword')?.hasError('required')) {
-              <span>Passwords do not match</span>
-            }
+            <span>{{ registerForm.confirmPassword().errors()[0].message }}</span>
           </div>
         }
       </div>
@@ -107,9 +87,18 @@
       <!-- Submit Button -->
       <button
         type="submit"
-        class="w-full py-3 px-4 bg-linear-to-r from-peacock-teal to-peacock-emerald hover:from-peacock-emerald hover:to-peacock-teal text-white font-bold rounded-lg shadow-lg transform transition-all duration-200 hover:scale-[1.02] active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-peacock-teal"
+        [disabled]="loading() || registerForm().pending()"
+        class="w-full py-3 px-4 bg-linear-to-r from-peacock-teal to-peacock-emerald hover:from-peacock-emerald hover:to-peacock-teal text-white font-bold rounded-lg shadow-lg transform transition-all duration-200 hover:scale-[1.02] active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-peacock-teal flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Sign Up
+        @if (loading()) {
+          <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Creating account...
+        } @else {
+          Sign Up
+        }
       </button>
 
       <!-- Login Link -->

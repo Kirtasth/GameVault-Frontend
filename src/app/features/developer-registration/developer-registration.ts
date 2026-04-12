@@ -1,19 +1,19 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Router} from '@angular/router';
-import {CatalogService} from '../../core/services/catalog.service';
-import {finalize} from 'rxjs';
-import {AuthService} from '../../core/services/auth.service';
-import {NewDeveloperModel} from '../../core/models/catalog.model';
-import {UserService} from '../../core/services/user.service';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormField, form, required, minLength, submit } from '@angular/forms/signals';
+import { Router } from '@angular/router';
+import { CatalogService } from '../../core/services/catalog.service';
+import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../../core/services/auth.service';
+import { NewDeveloperModel } from '../../core/models/catalog.model';
+import { UserService } from '../../core/services/user.service';
 
 @Component({
   selector: 'app-developer-registration',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, FormField],
   templateUrl: './developer-registration.html',
   styleUrl: './developer-registration.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeveloperRegistration implements OnInit {
   private readonly router: Router = inject(Router);
@@ -21,61 +21,52 @@ export class DeveloperRegistration implements OnInit {
   private readonly authService: AuthService = inject(AuthService);
   private readonly userService: UserService = inject(UserService);
 
-  protected devRegisterForm!: FormGroup;
-  protected devRegisterModel!: NewDeveloperModel;
+  devRegisterModel = signal({
+    name: '',
+    description: ''
+  });
+
+  devRegisterForm = form(this.devRegisterModel, (s) => {
+    required(s.name, { message: 'Developer name is required' });
+    minLength(s.name, 3, { message: 'Name must be at least 3 characters' });
+  });
+
   protected userId: number | null = null;
-  protected submitted = false;
-  protected loading = false;
-  protected error = '';
+  protected loading = signal(false);
+  protected error = signal('');
 
   ngOnInit(): void {
-    this.devRegisterForm = new FormGroup({
-      name: new FormControl('', [Validators.required, Validators.minLength(3)]),
-      description: new FormControl('')
-    })
-
     this.userId = this.authService.getUserId();
   }
 
   onSubmit() {
-    this.submitted = true;
+    submit(this.devRegisterForm, async () => {
+      if (this.userId == null) {
+        await firstValueFrom(this.authService.logout());
+        await this.router.navigate(['login']);
+        return;
+      }
 
-    if (this.devRegisterForm.invalid) {
-      return;
-    }
+      this.loading.set(true);
+      try {
+        const payload: NewDeveloperModel = {
+          userId: this.userId,
+          name: this.devRegisterModel().name,
+          description: this.devRegisterModel().description
+        };
 
-    if (this.userId == null) {
-      this.authService.logout().subscribe(
-        () => {
-          this.router.navigate(['login']).then();
-        }
-      );
-      return;
-    }
+        await firstValueFrom(this.catalogService.registerDeveloper(payload));
+        await firstValueFrom(this.userService.fetchProfile());
+        await this.router.navigate(['home']);
+      } catch (err) {
+        this.error.set('Registration failed. Please try again.');
+      } finally {
+        this.loading.set(false);
+      }
+    });
+  }
 
-    this.loading = true;
-
-    this.devRegisterModel = {
-      userId: this.userId,
-      name: this.devRegisterForm.value.name,
-      description: this.devRegisterForm.value.description
-    }
-
-    this.catalogService.registerDeveloper(this.devRegisterModel)
-      .pipe(
-        finalize(() => this.loading = false)
-      )
-      .subscribe({
-        next: () => {
-          this.userService.fetchProfile().subscribe(() => {
-            this.router.navigate(['home']).then();
-          });
-        },
-        error: () => {
-
-          this.error = 'Registration failed. Please try again.';
-          this.loading = false;
-        }
-      });
+  onCancel() {
+    this.router.navigate(['home']);
   }
 }

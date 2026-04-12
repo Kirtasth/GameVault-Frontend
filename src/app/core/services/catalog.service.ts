@@ -1,6 +1,6 @@
 import {inject, Injectable, signal} from '@angular/core';
-import {map, Observable, of, tap, throwError} from 'rxjs';
-import {GamePage, NewDeveloperModel, NewGameModel} from '../models/catalog.model';
+import {forkJoin, map, Observable, of, switchMap, tap, throwError} from 'rxjs';
+import {GameKeyResponse, GamePage, NewDeveloperModel, NewGameModel} from '../models/catalog.model';
 import {BackendService} from './api/backend.service';
 import {AuthService} from './auth.service';
 import {UserRole} from '../models/user.model';
@@ -68,9 +68,22 @@ export class CatalogService {
     }
 
     return this.backendService.getMyGames().pipe(
-      map(response => {
-        console.log('CatalogService.getMyGames response received');
-        return response as GamePage;
+      map(response => response as GamePage),
+      switchMap(page => {
+        if (page.content.length === 0) return of(page);
+
+        const gamesWithKeys$ = page.content.map(game =>
+          this.backendService.getGameKeys(game.id).pipe(
+            map(keys => ({
+              ...game,
+              keysAvailable: (keys as GameKeyResponse[]).filter(k => !k.isUsed).length
+            }))
+          )
+        );
+
+        return forkJoin(gamesWithKeys$).pipe(
+          map(content => ({ ...page, content }))
+        );
       })
     );
   }
@@ -85,5 +98,13 @@ export class CatalogService {
     return this.backendService.getGamesFromIds({ ids: gameIds }).pipe(
       map(response => response as GamePage)
     );
+  }
+
+  addKeysToGame(gameId: string, keys: string[]): Observable<unknown> {
+    return this.backendService.addKeysToGame(gameId, keys);
+  }
+
+  getGameKeys(gameId: string): Observable<GameKeyResponse[]> {
+    return this.backendService.getGameKeys(gameId);
   }
 }

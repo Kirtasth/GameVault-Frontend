@@ -1,15 +1,15 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {CurrencyPipe} from '@angular/common';
-import {CartService} from '../../core/services/cart.service';
-import {Sidebar} from '../../core/components/sidebar/sidebar';
-import {CartItem} from '../../core/models/cart.model';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
+import { CartService } from '../../core/services/cart.service';
+import { Sidebar } from '../../core/components/sidebar/sidebar';
+import { CartItem } from '../../core/models/cart.model';
 
 @Component({
   selector: 'app-cart',
-  standalone: true,
   imports: [CurrencyPipe, Sidebar],
   templateUrl: './cart.html',
-  styleUrl: './cart.css'
+  styleUrl: './cart.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Cart implements OnInit {
   cartService = inject(CartService);
@@ -36,8 +36,7 @@ export class Cart implements OnInit {
     await this.cartService.clearCart();
   }
 
-  checkout() {
-    // TODO: Implement checkout logic
-    console.log('Checkout clicked');
+  async checkout() {
+    await this.cartService.checkout();
   }
 }

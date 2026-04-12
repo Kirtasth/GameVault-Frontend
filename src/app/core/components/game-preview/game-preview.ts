@@ -1,34 +1,35 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Game } from '../../models/catalog.model';
 import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-game-preview',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './game-preview.html',
-  styleUrls: ['./game-preview.css']
+  styleUrls: ['./game-preview.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GamePreview {
-  @Input() game: Game | null = null;
-  @Output() closeModal = new EventEmitter<void>();
+  game = input<Game | null>(null);
+  closeModal = output<void>();
 
   private cartService = inject(CartService);
 
-  isClosing = false;
+  isClosing = signal(false);
 
   onClose() {
-    this.isClosing = true;
+    this.isClosing.set(true);
     setTimeout(() => {
       this.closeModal.emit();
-      this.isClosing = false;
+      this.isClosing.set(false);
     }, 300); // Match animation duration
   }
 
-  addToCart() {
-    if (this.game) {
-      this.cartService.addToCart(this.game).then();
+  async addToCart() {
+    const game = this.game();
+    if (game) {
+      await this.cartService.addToCart(game);
       this.onClose();
     }
   }
