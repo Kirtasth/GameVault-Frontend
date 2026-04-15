@@ -49,3 +49,11 @@ export interface GameKeyResponse {
   isUsed: boolean;
   createdAt: string;
 }
+
+export interface PurchasedGameKeyResponse {
+  gameId: number;
+  gameTitle: string;
+  imageUrl: string;
+  keyValue: string;
+  purchasedAt: string;
+}

@@ -17,6 +17,7 @@ export class Cart implements OnInit {
   items = this.cartService.items;
   totalPrice = this.cartService.totalPrice;
   totalItems = this.cartService.totalItems;
+  checkoutError = this.cartService.checkoutError;
 
   ngOnInit() {
     this.cartService.loadCart();

@@ -1,6 +1,12 @@
 import {inject, Injectable, signal} from '@angular/core';
 import {forkJoin, map, Observable, of, switchMap, tap, throwError} from 'rxjs';
-import {GameKeyResponse, GamePage, NewDeveloperModel, NewGameModel} from '../models/catalog.model';
+import {
+  GameKeyResponse,
+  GamePage,
+  NewDeveloperModel,
+  NewGameModel,
+  PurchasedGameKeyResponse
+} from '../models/catalog.model';
 import {BackendService} from './api/backend.service';
 import {AuthService} from './auth.service';
 import {UserRole} from '../models/user.model';
@@ -88,10 +94,8 @@ export class CatalogService {
     );
   }
 
-  getPurchasedGames(): Observable<GamePage> {
-    return this.backendService.getPurchasedGames().pipe(
-      map(response => response as GamePage)
-    )
+  getPurchasedGames(): Observable<PurchasedGameKeyResponse[]> {
+    return this.backendService.getPurchasedGames();
   }
 
   getGamesFromIds(gameIds: number[]): Observable<GamePage> {

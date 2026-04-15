@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Sidebar } from '../../core/components/sidebar/sidebar';
 import { CatalogService } from '../../core/services/catalog.service';
-import { GamePage } from '../../core/models/catalog.model';
+import { PurchasedGameKeyResponse } from '../../core/models/catalog.model';
 import { RouterLink } from '@angular/router';
 import { rxResource } from '@angular/core/rxjs-interop';
 
@@ -16,7 +16,17 @@ import { rxResource } from '@angular/core/rxjs-interop';
 export class PurchasedGames {
   private catalogService = inject(CatalogService);
 
-  gamesResource = rxResource<GamePage, undefined>({
+  gamesResource = rxResource<PurchasedGameKeyResponse[], undefined>({
     stream: () => this.catalogService.getPurchasedGames()
   });
+
+  selectedGameId = signal<number | null>(null);
+
+  toggleKey(gameId: number) {
+    if (this.selectedGameId() === gameId) {
+      this.selectedGameId.set(null);
+    } else {
+      this.selectedGameId.set(gameId);
+    }
+  }
 }

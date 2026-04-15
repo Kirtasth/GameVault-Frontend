@@ -4,6 +4,7 @@ import { Cart, CartItem, UpdateCart } from '../models/cart.model';
 import { BackendService } from './api/backend.service';
 import { CatalogService } from './catalog.service';
 import { firstValueFrom } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export interface CartItemWithGame extends CartItem {
   game: Game;
@@ -18,10 +19,12 @@ export interface CartWithGames extends Omit<Cart, 'items'> {
 })
 export class CartService {
   private _cart = signal<CartWithGames | null>(null);
+  private _checkoutError = signal<string | null>(null);
   private backendService = inject(BackendService);
   private catalogService = inject(CatalogService);
 
   readonly cart = this._cart.asReadonly();
+  readonly checkoutError = this._checkoutError.asReadonly();
 
   readonly items = computed(() => this._cart()?.items ?? []);
   readonly totalItems = computed(() => this.items().reduce((acc, item) => acc + item.quantity, 0));
@@ -193,13 +196,19 @@ export class CartService {
   }
 
   async checkout() {
+    this._checkoutError.set(null);
     try {
       const response = await firstValueFrom(this.backendService.checkout());
       if (response && response.url) {
         window.location.href = response.url;
       }
     } catch (error) {
-      console.error('Checkout failed', error);
+      if (error instanceof HttpErrorResponse && error.status === 409) {
+        this._checkoutError.set('Some games in your cart are out of stock. Please remove them and try again.');
+      } else {
+        console.error('Checkout failed', error);
+        this._checkoutError.set('An unexpected error occurred during checkout. Please try again later.');
+      }
     }
   }
 }

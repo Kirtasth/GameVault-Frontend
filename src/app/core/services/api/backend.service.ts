@@ -9,7 +9,14 @@ import {
   UserProfileModel
 } from '../../models/user.model';
 import {Observable} from 'rxjs';
-import {CustomGameIds, GameKeyResponse, GamePage, NewDeveloperModel, NewGameModel} from '../../models/catalog.model';
+import {
+  CustomGameIds,
+  GameKeyResponse,
+  GamePage,
+  NewDeveloperModel,
+  NewGameModel,
+  PurchasedGameKeyResponse
+} from '../../models/catalog.model';
 import {Cart, UpdateCart} from '../../models/cart.model';
 
 @Injectable({
@@ -88,8 +95,8 @@ export class BackendService {
     return this.http.get<GamePage>(`${this.catalogUrl}/my-games`);
   }
 
-  getPurchasedGames(): Observable<GamePage> {
-    return this.http.get<GamePage>(`${this.catalogUrl}/purchased-games`);
+  getPurchasedGames(): Observable<PurchasedGameKeyResponse[]> {
+    return this.http.get<PurchasedGameKeyResponse[]>(`${this.checkoutUrl}/my-keys`);
   }
 
   getGamesFromIds(gameIds: CustomGameIds): Observable<GamePage> {
