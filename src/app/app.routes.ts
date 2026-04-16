@@ -1,6 +1,7 @@
 import {Routes} from '@angular/router';
 import {AuthGuard} from './core/guards/auth.guard';
 import {DeveloperGuard} from './core/guards/developer.guard';
+import {Shell} from './core/components/shell/shell';
 
 export const routes: Routes = [
   {
@@ -15,59 +16,65 @@ export const routes: Routes = [
   },
 
   {
-    path: 'home',
-    loadComponent: () => import('./features/home/home').then(m => m.Home),
-    title: 'GameVault - Home',
-    canActivate: [AuthGuard],
-  },
+    path: '',
+    component: Shell,
+    children: [
+      {
+        path: 'home',
+        loadComponent: () => import('./features/home/home').then(m => m.Home),
+        title: 'GameVault - Home',
+      },
 
-  {
-    path: 'cart',
-    loadComponent: () => import('./features/cart/cart').then(m => m.Cart),
-    title: 'GameVault - Cart',
-    canActivate: [AuthGuard]
-  },
+      {
+        path: 'cart',
+        loadComponent: () => import('./features/cart/cart').then(m => m.Cart),
+        title: 'GameVault - Cart',
+        canActivate: [AuthGuard],
+      },
 
-  {
-    path: 'checkout/success',
-    loadComponent: () => import('./features/checkout/checkout-success').then(m => m.CheckoutSuccess),
-    title: 'GameVault - Payment Successful',
-    canActivate: [AuthGuard]
-  },
+      {
+        path: 'checkout/success',
+        loadComponent: () => import('./features/checkout/checkout-success').then(m => m.CheckoutSuccess),
+        title: 'GameVault - Payment Successful',
+        canActivate: [AuthGuard],
+      },
 
-  {
-    path: 'checkout/error',
-    loadComponent: () => import('./features/checkout/checkout-error').then(m => m.CheckoutError),
-    title: 'GameVault - Payment Failed',
-    canActivate: [AuthGuard]
-  },
+      {
+        path: 'checkout/error',
+        loadComponent: () => import('./features/checkout/checkout-error').then(m => m.CheckoutError),
+        title: 'GameVault - Payment Failed',
+        canActivate: [AuthGuard],
+      },
 
-  {
-    path: 'purchased-games',
-    loadComponent: () => import('./features/purchased-games/purchased-games').then(m => m.PurchasedGames),
-    title: 'GameVault - Purchased Games',
-    canActivate: [AuthGuard]
-  },
+      {
+        path: 'purchased-games',
+        loadComponent: () => import('./features/purchased-games/purchased-games').then(m => m.PurchasedGames),
+        title: 'GameVault - Purchased Games',
+        canActivate: [AuthGuard],
+      },
 
-  {
-    path: 'become-developer',
-    loadComponent: () => import('./features/developer-registration/developer-registration').then(m => m.DeveloperRegistration),
-    title: 'GameVault - Become a Developer',
-    canActivate: [AuthGuard]
-  },
+      {
+        path: 'become-developer',
+        loadComponent: () => import('./features/developer-registration/developer-registration').then(m => m.DeveloperRegistration),
+        title: 'GameVault - Become a Developer',
+        canActivate: [AuthGuard],
+      },
 
-  {
-    path: 'dev-tools',
-    loadChildren: () => import('./features/dev-tools/dev-tools.routes').then(m => m.DEV_TOOLS_ROUTES),
-    title: 'GameVault - Developer Tools',
-    canActivate: [AuthGuard, DeveloperGuard]
-  },
+      {
+        path: 'dev-tools',
+        loadChildren: () => import('./features/dev-tools/dev-tools.routes').then(m => m.DEV_TOOLS_ROUTES),
+        title: 'GameVault - Developer Tools',
+        canActivate: [DeveloperGuard]
+      },
 
-  {
-    path: 'profile',
-    loadChildren: () => import('./features/profile/profile.routes').then(m => m.PROFILE_ROUTES),
-    title: 'GameVault - My Profile',
-    canActivate: [AuthGuard]
+      {
+        path: 'profile',
+        loadChildren: () => import('./features/profile/profile.routes').then(m => m.PROFILE_ROUTES),
+        title: 'GameVault - My Profile',
+        canActivate: [AuthGuard],
+      },
+      { path: '', redirectTo: 'home', pathMatch: 'full' }
+    ]
   },
 
   {path: '**', redirectTo: 'home'}

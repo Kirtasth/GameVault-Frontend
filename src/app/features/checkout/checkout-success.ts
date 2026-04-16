@@ -1,12 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Sidebar } from '../../core/components/sidebar/sidebar';
 import { CartService } from '../../core/services/cart.service';
 
 @Component({
   selector: 'app-checkout-success',
   standalone: true,
-  imports: [RouterLink, Sidebar],
+  imports: [RouterLink],
   templateUrl: './checkout-success.html',
   styleUrl: './checkout-success.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

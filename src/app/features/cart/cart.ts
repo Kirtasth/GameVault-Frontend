@@ -1,12 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { CartService } from '../../core/services/cart.service';
-import { Sidebar } from '../../core/components/sidebar/sidebar';
 import { CartItem } from '../../core/models/cart.model';
 
 @Component({
   selector: 'app-cart',
-  imports: [CurrencyPipe, Sidebar],
+  imports: [CurrencyPipe],
   templateUrl: './cart.html',
   styleUrl: './cart.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

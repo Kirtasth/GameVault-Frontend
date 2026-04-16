@@ -1,45 +1,39 @@
-<div class="flex h-screen bg-peacock-dark overflow-hidden">
-  <!-- Sidebar -->
-  <app-sidebar class="w-64 shrink-0"></app-sidebar>
+<div class="p-4 md:p-8">
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold text-white mb-2">Developer Tools</h1>
+    <p class="text-gray-400">Manage your games and upload new ones</p>
+  </header>
 
-  <!-- Main Content -->
-  <main class="flex-1 overflow-y-auto p-8">
-    <header class="mb-8">
-      <h1 class="text-3xl font-bold text-white mb-2">Developer Tools</h1>
-      <p class="text-gray-400">Manage your games and upload new ones</p>
-    </header>
+  <!-- Tabs -->
+  <div class="flex space-x-4 mb-6 border-b border-white/10 pb-2">
+    <button
+      (click)="setActiveTab('my-games')"
+      [class.text-peacock-teal]="activeTab() === 'my-games'"
+      [class.border-peacock-teal]="activeTab() === 'my-games'"
+      [class.text-gray-400]="activeTab() !== 'my-games'"
+      [class.border-transparent]="activeTab() !== 'my-games'"
+      class="pb-2 px-4 font-medium border-b-2 transition-colors hover:text-white">
+      My Games
+    </button>
+    <button
+      (click)="setActiveTab('upload-game')"
+      [class.text-peacock-teal]="activeTab() === 'upload-game'"
+      [class.border-peacock-teal]="activeTab() === 'upload-game'"
+      [class.text-gray-400]="activeTab() !== 'upload-game'"
+      [class.border-transparent]="activeTab() !== 'upload-game'"
+      class="pb-2 px-4 font-medium border-b-2 transition-colors hover:text-white">
+      Upload Game
+    </button>
+  </div>
 
-    <!-- Tabs -->
-    <div class="flex space-x-4 mb-6 border-b border-white/10 pb-2">
-      <button
-        (click)="setActiveTab('my-games')"
-        [class.text-peacock-teal]="activeTab() === 'my-games'"
-        [class.border-peacock-teal]="activeTab() === 'my-games'"
-        [class.text-gray-400]="activeTab() !== 'my-games'"
-        [class.border-transparent]="activeTab() !== 'my-games'"
-        class="pb-2 px-4 font-medium border-b-2 transition-colors hover:text-white">
-        My Games
-      </button>
-      <button
-        (click)="setActiveTab('upload-game')"
-        [class.text-peacock-teal]="activeTab() === 'upload-game'"
-        [class.border-peacock-teal]="activeTab() === 'upload-game'"
-        [class.text-gray-400]="activeTab() !== 'upload-game'"
-        [class.border-transparent]="activeTab() !== 'upload-game'"
-        class="pb-2 px-4 font-medium border-b-2 transition-colors hover:text-white">
-        Upload Game
-      </button>
-    </div>
+  <!-- Content -->
+  <div class="mt-6">
+    @if (activeTab() === 'my-games') {
+      <app-my-games (navigateToUpload)="setActiveTab('upload-game')"></app-my-games>
+    }
 
-    <!-- Content -->
-    <div class="mt-6">
-      @if (activeTab() === 'my-games') {
-        <app-my-games (navigateToUpload)="setActiveTab('upload-game')"></app-my-games>
-      }
-
-      @if (activeTab() === 'upload-game') {
-        <app-upload-game (gameCreated)="onGameCreated()"></app-upload-game>
-      }
-    </div>
-  </main>
+    @if (activeTab() === 'upload-game') {
+      <app-upload-game (gameCreated)="onGameCreated()"></app-upload-game>
+    }
+  </div>
 </div>

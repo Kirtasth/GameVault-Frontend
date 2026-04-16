@@ -1,14 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormField, form, required, email, minLength, submit } from '@angular/forms/signals';
-import { Sidebar } from '../../core/components/sidebar/sidebar';
 import { UserService } from '../../core/services/user.service';
 import { UpdatedProfile } from '../../core/models/user.model';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
-  imports: [CommonModule, Sidebar, FormField],
+  imports: [CommonModule, FormField],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -4,21 +4,15 @@ import { CatalogService } from '../../core/services/catalog.service';
 import { of } from 'rxjs';
 import { provideRouter } from '@angular/router';
 import { PurchasedGameKeyResponse } from '../../core/models/catalog.model';
-import { Component } from '@angular/core';
-import { Sidebar } from '../../core/components/sidebar/sidebar';
-
-// Mock Sidebar component
-@Component({
-  selector: 'app-sidebar',
-  standalone: true,
-  template: '<div id="mock-sidebar"></div>'
-})
-class MockSidebar {}
+import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
+import { Observable } from 'rxjs';
 
 describe('PurchasedGames', () => {
   let component: PurchasedGames;
   let fixture: ComponentFixture<PurchasedGames>;
-  let catalogServiceMock: any;
+  let catalogServiceMock: {
+    getPurchasedGames: Mock<() => Observable<PurchasedGameKeyResponse[]>>;
+  };
 
   const mockGames: PurchasedGameKeyResponse[] = [
     {
@@ -48,10 +42,6 @@ describe('PurchasedGames', () => {
         provideRouter([]),
         { provide: CatalogService, useValue: catalogServiceMock }
       ]
-    })
-    .overrideComponent(PurchasedGames, {
-      remove: { imports: [Sidebar] },
-      add: { imports: [MockSidebar] }
     })
     .compileComponents();
 
