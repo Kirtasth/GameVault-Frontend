@@ -43,10 +43,11 @@ describe('PurchasedGames', () => {
     fixture.detectChanges();
 
     // Mock clipboard
-    Object.assign(navigator, {
-      clipboard: {
+    Object.defineProperty(navigator, 'clipboard', {
+      value: {
         writeText: vi.fn().mockImplementation(() => Promise.resolve()),
       },
+      configurable: true
     });
   });
 
