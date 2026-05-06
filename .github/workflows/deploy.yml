@@ -17,10 +17,12 @@
 #          cache: 'npm'
 #      - name: Install Dependencies
 #        run: npm ci
+#      - name: Install Playwright Browsers
+#        run: npx playwright install --with-deps chromium
 #      - name: Lint Code
 #        run: npm run lint
 #      - name: Run Tests
-#        run: npm run test -- --watch=false --browsers=ChromeHeadless
+#        run: npm run test -- --watch=false --browsers=chromiumHeadless
 #
 #  build_docker_image:
 #    runs-on: [self-hosted, local]
