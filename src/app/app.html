@@ -1,2 +1,6 @@
-<router-outlet></router-outlet>
-<app-not-implemented></app-not-implemented>
+@if (isProduction && !isBackendReady()) {
+  <app-loading-spinner></app-loading-spinner>
+} @else {
+  <router-outlet></router-outlet>
+  <app-not-implemented></app-not-implemented>
+}

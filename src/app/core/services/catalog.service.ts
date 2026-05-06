@@ -80,10 +80,14 @@ export class CatalogService {
 
         const gamesWithKeys$ = page.content.map(game =>
           this.backendService.getGameKeys(game.id).pipe(
-            map(keys => ({
-              ...game,
-              keysAvailable: (keys as GameKeyResponse[]).filter(k => !k.isUsed).length
-            }))
+            map(keys => {
+              const gameKeys = keys as GameKeyResponse[];
+              return {
+                ...game,
+                keysAvailable: gameKeys.filter(k => !k.isUsed).length,
+                usedKeys: gameKeys.filter(k => k.isUsed).length
+              };
+            })
           )
         );
 

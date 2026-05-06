@@ -1,0 +1,24 @@
+<div class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-peacock-dark">
+  <div class="relative w-24 h-24 mb-6">
+    <!-- Outer spinning ring -->
+    <div class="absolute inset-0 border-4 border-peacock-teal/20 rounded-full"></div>
+    <div class="absolute inset-0 border-4 border-peacock-teal rounded-full border-t-transparent animate-spin"></div>
+
+    <!-- Logo in the center -->
+    <div class="absolute inset-0 flex items-center justify-center">
+      <img src="assets/images/game_vault_logo.svg" alt="GameVault Logo" class="w-12 h-12 animate-pulse">
+    </div>
+  </div>
+
+  <h2 class="text-white text-xl font-semibold mb-2 animate-pulse">Initializing GameVault</h2>
+  <p class="text-gray-400 text-sm max-w-xs text-center px-4">
+    The backend is waking up. This may take up to 30 seconds in production.
+  </p>
+
+  <!-- Loading dots -->
+  <div class="mt-8 flex gap-1">
+    <div class="w-2 h-2 bg-peacock-teal rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+    <div class="w-2 h-2 bg-peacock-teal rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+    <div class="w-2 h-2 bg-peacock-teal rounded-full animate-bounce"></div>
+  </div>
+</div>

@@ -84,7 +84,7 @@
           </div>
 
           <div class="pt-6 flex justify-end">
-            <button type="submit" [disabled]="profileForm().invalid() || isSaving()"
+            <button appDebounceClick type="submit" [disabled]="profileForm().invalid() || isSaving()"
                     class="px-8 py-3 bg-peacock-teal hover:bg-peacock-teal/80 disabled:opacity-50 text-white font-bold rounded-xl transition-all shadow-lg shadow-peacock-teal/20 flex items-center gap-2">
               @if (isSaving()) {
                 <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

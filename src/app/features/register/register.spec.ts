@@ -7,7 +7,7 @@ import { of } from 'rxjs';
 describe('Register', () => {
   let component: Register;
   let fixture: ComponentFixture<Register>;
-  let authServiceMock: any;
+  let authServiceMock: Partial<AuthService>;
 
   beforeEach(async () => {
     authServiceMock = {

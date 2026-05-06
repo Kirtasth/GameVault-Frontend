@@ -8,10 +8,12 @@ import {UserService} from '../../core/services/user.service';
 import {UserRole} from '../../core/models/user.model';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../core/services/auth.service';
+import { CartService } from '../../core/services/cart.service';
+import { DebounceClickDirective } from '../../core/directives/debounce-click.directive';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterLink, GamePreview],
+  imports: [CommonModule, RouterLink, GamePreview, DebounceClickDirective],
   templateUrl: './home.html',
   styleUrl: './home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,7 +21,8 @@ import { AuthService } from '../../core/services/auth.service';
 export class Home {
   private catalogService = inject(CatalogService);
   private userService = inject(UserService);
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);
+  public cartService = inject(CartService);
 
   // Use rxResource for data fetching
   gamesResource = rxResource<GamePage, undefined>({
@@ -36,6 +39,11 @@ export class Home {
     return profile.roles.some(r => r.role === UserRole.DEVELOPER);
   });
 
+  isInCart(gameId: string | number) {
+    const id = Number(gameId);
+    return this.cartService.items().some(item => item.gameId === id);
+  }
+
   constructor() {
     // Fetch profile if authenticated but not already loaded
     if (this.authService.isAuthenticatedSignal() && !this.userService.userProfile()) {
@@ -51,5 +59,9 @@ export class Home {
 
   closePreview() {
     this.selectedGame.set(null);
+  }
+
+  addToCart(game: Game) {
+    this.cartService.addToCart(game);
   }
 }

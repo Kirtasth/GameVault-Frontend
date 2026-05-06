@@ -1,5 +1,5 @@
 export const environment = {
   build: 'pro',
   logLevel: 'error',
-  backendUrl: 'https://gamevault-backend-latest.onrender.com/api/v1'
+  backendUrl: 'https://gamevault-backend.fly.dev/api/v1'
 };

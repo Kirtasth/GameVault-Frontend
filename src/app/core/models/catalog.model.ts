@@ -11,6 +11,7 @@ export interface Game {
   tags: string[];
   statuses: string[];
   keysAvailable: number;
+  usedKeys?: number;
 }
 
 export interface NewDeveloperModel {

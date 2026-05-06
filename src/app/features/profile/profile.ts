@@ -1,19 +1,24 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormField, form, required, email, minLength, submit } from '@angular/forms/signals';
 import { UserService } from '../../core/services/user.service';
 import { UpdatedProfile } from '../../core/models/user.model';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subject, Subscription } from 'rxjs';
+import { throttleTime } from 'rxjs/operators';
+import { DebounceClickDirective } from '../../core/directives/debounce-click.directive';
 
 @Component({
   selector: 'app-profile',
-  imports: [CommonModule, FormField],
+  imports: [CommonModule, FormField, DebounceClickDirective],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Profile implements OnInit {
+export class Profile implements OnInit, OnDestroy {
   private readonly userService = inject(UserService);
+
+  private submitSubject = new Subject<void>();
+  private sub?: Subscription;
 
   profileModel = signal({
     username: '',
@@ -39,6 +44,13 @@ export class Profile implements OnInit {
 
   ngOnInit() {
     this.loadProfile();
+    this.sub = this.submitSubject.pipe(
+      throttleTime(500, undefined, { leading: true, trailing: false })
+    ).subscribe(() => this.executeSubmit());
+  }
+
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
   }
 
   loadProfile() {
@@ -77,6 +89,10 @@ export class Profile implements OnInit {
   }
 
   onSubmit() {
+    this.submitSubject.next();
+  }
+
+  private executeSubmit() {
     submit(this.profileForm, async () => {
       this.isSaving.set(true);
       try {

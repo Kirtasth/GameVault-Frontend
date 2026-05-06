@@ -4,10 +4,11 @@ import { CatalogService } from '../../../core/services/catalog.service';
 import { Game, GamePage } from '../../../core/models/catalog.model';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { AddKeysComponent } from './add-keys/add-keys';
+import { DebounceClickDirective } from '../../../core/directives/debounce-click.directive';
 
 @Component({
   selector: 'app-my-games',
-  imports: [CommonModule, AddKeysComponent],
+  imports: [CommonModule, AddKeysComponent, DebounceClickDirective],
   templateUrl: './my-games.html',
   styleUrl: './my-games.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

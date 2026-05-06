@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Sidebar } from '../sidebar/sidebar';
 import { Header } from '../header/header';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-shell',
@@ -11,4 +12,6 @@ import { Header } from '../header/header';
   templateUrl: './shell.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Shell {}
+export class Shell {
+  public authService = inject(AuthService);
+}

@@ -8,8 +8,8 @@ import { PurchasedGameKeyResponse } from '../models/catalog.model';
 
 describe('CatalogService', () => {
   let service: CatalogService;
-  let backendServiceMock: any;
-  let authServiceMock: any;
+  let backendServiceMock: Partial<BackendService>;
+  let authServiceMock: Partial<AuthService>;
 
   beforeEach(() => {
     backendServiceMock = {
@@ -40,7 +40,7 @@ describe('CatalogService', () => {
   it('should fetch games', async () => {
     const games = await firstValueFrom(service.getGames());
     expect(games).toBeTruthy();
-    expect(backendServiceMock.getGames).toHaveBeenCalled();
+    expect(backendServiceMock.getGames!).toHaveBeenCalled();
   });
 
   it('should check if user is developer', async () => {
@@ -64,11 +64,11 @@ describe('CatalogService', () => {
         purchasedAt: '2021-01-01T00:00:00Z'
       }
     ];
-    backendServiceMock.getPurchasedGames.mockReturnValue(of(mockPurchasedGames));
+    backendServiceMock.getPurchasedGames = vi.fn().mockReturnValue(of(mockPurchasedGames));
 
     const result = await firstValueFrom(service.getPurchasedGames());
     
     expect(result).toEqual(mockPurchasedGames);
-    expect(backendServiceMock.getPurchasedGames).toHaveBeenCalled();
+    expect(backendServiceMock.getPurchasedGames!).toHaveBeenCalled();
   });
 });

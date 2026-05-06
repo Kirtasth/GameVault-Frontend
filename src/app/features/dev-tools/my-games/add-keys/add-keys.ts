@@ -1,24 +1,29 @@
-import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, OnInit, OnDestroy, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Game } from '../../../../core/models/catalog.model';
 import { CatalogService } from '../../../../core/services/catalog.service';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subject, Subscription } from 'rxjs';
+import { throttleTime } from 'rxjs/operators';
+import { DebounceClickDirective } from '../../../../core/directives/debounce-click.directive';
 
 @Component({
   selector: 'app-add-keys',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, DebounceClickDirective],
   templateUrl: './add-keys.html',
   styleUrl: './add-keys.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddKeysComponent {
+export class AddKeysComponent implements OnInit, OnDestroy {
   game = input.required<Game>();
   keysAdded = output<void>();
   cancelAction = output<void>();
 
   private fb = inject(FormBuilder);
   private catalogService = inject(CatalogService);
+
+  private submitSubject = new Subject<void>();
+  private sub?: Subscription;
 
   isSubmitting = signal(false);
   errorMessage = signal<string | null>(null);
@@ -27,7 +32,21 @@ export class AddKeysComponent {
     keys: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9- \n\r]+$/)]],
   });
 
+  ngOnInit() {
+    this.sub = this.submitSubject.pipe(
+      throttleTime(500, undefined, { leading: true, trailing: false })
+    ).subscribe(() => this.executeSubmit());
+  }
+
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
+  }
+
   async onSubmit() {
+    this.submitSubject.next();
+  }
+
+  private async executeSubmit() {
     if (this.keysForm.invalid || this.isSubmitting()) return;
 
     const keysString = this.keysForm.get('keys')?.value || '';

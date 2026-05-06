@@ -1,6 +1,10 @@
 <!-- Backdrop for mobile -->
 <div
   (click)="closeSidebar()"
+  (keydown.enter)="closeSidebar()"
+  (keydown.space)="closeSidebar()"
+  role="button"
+  tabindex="0"
   [ngClass]="{'opacity-100 pointer-events-auto': isSidebarOpen(), 'opacity-0 pointer-events-none': !isSidebarOpen()}"
   class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300 lg:hidden">
 </div>
@@ -16,7 +20,14 @@
 >
 
   <!-- Header / Toggle -->
-  <div class="shrink-0 h-20 flex items-center justify-between px-4 border-b border-white/10">
+  <div (click)="isCollapsed() && toggleSidebar()"
+       (keydown.enter)="isCollapsed() && toggleSidebar()"
+       (keydown.space)="isCollapsed() && toggleSidebar()"
+       [attr.role]="isCollapsed() ? 'button' : null"
+       [attr.tabindex]="isCollapsed() ? 0 : null"
+       [attr.aria-label]="isCollapsed() ? 'Expand sidebar' : null"
+       [ngClass]="{'cursor-pointer hover:bg-white/10': isCollapsed()}"
+       class="shrink-0 h-20 flex items-center justify-between px-4 border-b border-white/10 transition-colors focus:outline-none">
     <div class="flex items-center gap-3 overflow-hidden">
       @if (isAuthenticated()) {
         @if (userProfile(); as profile) {
@@ -44,7 +55,8 @@
     </div>
 
     <!-- Toggle button (only visible on desktop) -->
-    <button (click)="toggleSidebar()"
+    <button (click)="toggleSidebar(); $event.stopPropagation()"
+            [class.lg:hidden]="isCollapsed()"
             class="hidden lg:block text-gray-400 hover:text-white focus:outline-none p-1 rounded-md hover:bg-white/10 transition-colors">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -62,18 +74,43 @@
 
   <!-- Navigation -->
   <nav class="grow p-4 space-y-2 overflow-y-auto overflow-x-hidden">
-    <a routerLink="/home" routerLinkActive="bg-peacock-purple/50 text-white" (click)="closeSidebar()"
-       class="text-gray-300 hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center gap-3 whitespace-nowrap overflow-hidden"
-       title="Dashboard">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-        <path
-          d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
-      </svg>
-      <span [ngClass]="{'opacity-100': !isCollapsed(), 'opacity-0 w-0': isCollapsed()}"
-            class="transition-opacity duration-300">Store</span>
-    </a>
-
     @if (isAuthenticated()) {
+      @if (!isDeveloper() && !isCollapsed()) {
+        <div class="mb-6 p-4 rounded-xl bg-linear-to-br from-peacock-teal/20 to-peacock-dark border border-peacock-teal/30 relative overflow-hidden group">
+          <div class="absolute inset-0 bg-grid-white/[0.02] bg-size-[20px_20px]"></div>
+          <div class="relative z-10">
+            <h3 class="text-white font-bold text-sm mb-1">Become a Developer</h3>
+            <p class="text-gray-400 text-[10px] mb-3 leading-tight">Publish your games and reach millions of players.</p>
+            <a routerLink="/become-developer" (click)="closeSidebar()"
+               class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-peacock-teal hover:bg-peacock-teal/80 text-white text-[10px] font-bold rounded-lg transition-colors">
+              Start Creating
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      } @else if (!isDeveloper() && isCollapsed()) {
+        <a routerLink="/become-developer" (click)="closeSidebar()"
+           class="text-peacock-teal hover:bg-peacock-teal/10 px-3 py-2 rounded-md flex items-center justify-center mb-4"
+           title="Become a Developer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </a>
+      }
+
+      <a routerLink="/" routerLinkActive="bg-peacock-purple/50 text-white" [routerLinkActiveOptions]="{exact: true}" (click)="closeSidebar()"
+         class="text-gray-300 hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center gap-3 whitespace-nowrap overflow-hidden"
+         title="Dashboard">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+          <path
+            d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+        </svg>
+        <span [ngClass]="{'opacity-100': !isCollapsed(), 'opacity-0 w-0': isCollapsed()}"
+              class="transition-opacity duration-300">Store</span>
+      </a>
+
       <a routerLink="/cart" routerLinkActive="bg-peacock-purple/50 text-white" (click)="closeSidebar()"
          class="text-gray-300 hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center gap-3 whitespace-nowrap overflow-hidden relative"
          title="Cart">
@@ -116,28 +153,16 @@
       }
     } @else {
       <!-- Login/Register links for guest users -->
-      <a routerLink="/login" routerLinkActive="bg-peacock-purple/50 text-white" (click)="closeSidebar()"
-         class="text-gray-300 hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center gap-3 transition-colors whitespace-nowrap overflow-hidden"
-         title="Login">
+      <a routerLink="/login" routerLinkActive="bg-peacock-teal/50 text-white" (click)="closeSidebar()"
+         class="bg-peacock-teal/20 hover:bg-peacock-teal/30 text-peacock-teal px-3 py-2 rounded-md text-sm font-bold flex items-center gap-3 transition-all border border-peacock-teal/30 whitespace-nowrap overflow-hidden"
+         title="Identify/Register">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
           <polyline points="10 17 15 12 10 7"></polyline>
           <line x1="15" y1="12" x2="3" y2="12"></line>
         </svg>
         <span [ngClass]="{'opacity-100': !isCollapsed(), 'opacity-0 w-0': isCollapsed()}"
-              class="transition-opacity duration-300">Sign In</span>
-      </a>
-      <a routerLink="/register" routerLinkActive="bg-peacock-purple/50 text-white" (click)="closeSidebar()"
-         class="text-gray-300 hover:bg-white/10 hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center gap-3 transition-colors whitespace-nowrap overflow-hidden"
-         title="Register">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-          <circle cx="8.5" cy="7" r="4"></circle>
-          <line x1="20" y1="8" x2="20" y2="14"></line>
-          <line x1="23" y1="11" x2="17" y2="11"></line>
-        </svg>
-        <span [ngClass]="{'opacity-100': !isCollapsed(), 'opacity-0 w-0': isCollapsed()}"
-              class="transition-opacity duration-300">Join Now</span>
+              class="transition-opacity duration-300">Identify/Register</span>
       </a>
     }
   </nav>
@@ -157,7 +182,8 @@
               class="transition-opacity duration-300">Edit Profile</span>
       </a>
       <button
-        (click)="logout()"
+        appDebounceClick
+        (debounceClick)="logout()"
         class="w-full mt-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 px-3 py-2 rounded-lg text-sm font-medium transition-colors border border-red-500/30 flex items-center gap-3 justify-center whitespace-nowrap overflow-hidden"
         title="Sign Out"
       >

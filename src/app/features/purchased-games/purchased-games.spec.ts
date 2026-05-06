@@ -21,13 +21,6 @@ describe('PurchasedGames', () => {
       imageUrl: 'url1',
       keyValue: 'key-123',
       purchasedAt: '2021-01-01T00:00:00Z'
-    },
-    {
-      gameId: 2,
-      gameTitle: 'Game 2',
-      imageUrl: 'url2',
-      keyValue: 'key-456',
-      purchasedAt: '2021-01-02T00:00:00Z'
     }
   ];
 
@@ -48,44 +41,74 @@ describe('PurchasedGames', () => {
     fixture = TestBed.createComponent(PurchasedGames);
     component = fixture.componentInstance;
     fixture.detectChanges();
+
+    // Mock clipboard
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: vi.fn().mockImplementation(() => Promise.resolve()),
+      },
+    });
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load purchased games on init', () => {
-    expect(catalogServiceMock.getPurchasedGames).toHaveBeenCalled();
-    expect(component.gamesResource.value()).toEqual(mockGames);
+  it('should hide keys by default', () => {
+    component.toggleGame(1);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('••••-••••-••••-••••');
+    expect(compiled.textContent).not.toContain('key-123');
   });
 
-  it('should toggle selectedGameId when toggleKey is called', () => {
-    expect(component.selectedGameId()).toBeNull();
+  it('should reveal key when clicking eye icon', () => {
+    component.toggleGame(1);
+    fixture.detectChanges();
 
-    component.toggleKey(1);
-    expect(component.selectedGameId()).toBe(1);
-
-    component.toggleKey(1);
-    expect(component.selectedGameId()).toBeNull();
-
-    component.toggleKey(2);
-    expect(component.selectedGameId()).toBe(2);
-  });
-
-  it('should show the key in the template when selected', () => {
-    component.toggleKey(1);
+    const eyeButton = fixture.nativeElement.querySelector('button[title="Reveal key"]');
+    eyeButton.click();
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('key-123');
-    expect(compiled.textContent).toContain('Activation Key');
+    expect(compiled.textContent).not.toContain('••••-••••-••••-••••');
   });
 
-  it('should not show the key when not selected', () => {
+  it('should hide key when clicking elsewhere', () => {
+    component.toggleGame(1);
+    component.visibleKey.set('key-123');
     fixture.detectChanges();
 
+    document.dispatchEvent(new MouseEvent('click'));
+    fixture.detectChanges();
+
+    expect(component.visibleKey()).toBeNull();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).not.toContain('key-123');
-    expect(compiled.textContent).toContain('View Key');
+    expect(compiled.textContent).toContain('••••-••••-••••-••••');
+  });
+
+  it('should show "Copied!" and checkmark when copying', async () => {
+    vi.useFakeTimers();
+    component.toggleGame(1);
+    fixture.detectChanges();
+
+    const copyButton = Array.from(fixture.nativeElement.querySelectorAll('button'))
+      .find(b => (b as HTMLElement).textContent?.includes('Copy')) as HTMLButtonElement;
+    
+    copyButton.click();
+    fixture.detectChanges();
+
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('key-123');
+    expect(component.copiedKey()).toBe('key-123');
+    expect(fixture.nativeElement.textContent).toContain('Copied!');
+
+    vi.advanceTimersByTime(2000);
+    fixture.detectChanges();
+
+    expect(component.copiedKey()).toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Copy');
+    vi.useRealTimers();
   });
 });

@@ -6,10 +6,11 @@ import {CatalogService} from '../../services/catalog.service';
 import {UserService} from '../../services/user.service';
 import {CartService} from '../../services/cart.service';
 import {NavigationService} from '../../services/navigation.service';
+import { DebounceClickDirective } from '../../directives/debounce-click.directive';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, DebounceClickDirective],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

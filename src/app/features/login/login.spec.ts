@@ -7,7 +7,7 @@ import { of } from 'rxjs';
 describe('Login', () => {
   let component: Login;
   let fixture: ComponentFixture<Login>;
-  let authServiceMock: any;
+  let authServiceMock: Partial<AuthService>;
 
   beforeEach(async () => {
     authServiceMock = {

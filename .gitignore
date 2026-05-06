@@ -40,3 +40,6 @@ Thumbs.db
 # GEMINI
 /.geminiignore
 /.gemini/
+docs
+
+/graphify-out

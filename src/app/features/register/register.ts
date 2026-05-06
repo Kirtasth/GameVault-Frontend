@@ -1,22 +1,27 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormField, form, required, email, minLength, validate, submit } from '@angular/forms/signals';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subject, Subscription } from 'rxjs';
+import { throttleTime } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
+import { DebounceClickDirective } from '../../core/directives/debounce-click.directive';
 
 @Component({
   selector: 'app-register',
-  imports: [CommonModule, FormField, RouterLink],
+  imports: [CommonModule, FormField, RouterLink, DebounceClickDirective],
   templateUrl: './register.html',
   styleUrl: './register.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Register implements OnInit {
+export class Register implements OnInit, OnDestroy {
 
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+
+  private submitSubject = new Subject<void>();
+  private sub?: Subscription;
 
   registerModel = signal({
     username: '',
@@ -54,18 +59,35 @@ export class Register implements OnInit {
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['home']).then();
     }
+    this.sub = this.submitSubject.pipe(
+      throttleTime(500, undefined, { leading: true, trailing: false })
+    ).subscribe(() => this.executeSubmit());
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
   }
 
   onSubmit() {
+    this.submitSubject.next();
+  }
+
+  private executeSubmit() {
     this.error.set('');
 
     submit(this.registerForm, async () => {
       this.loading.set(true);
-      const { email, password } = this.registerModel();
+      const model = this.registerModel();
 
       try {
-        await firstValueFrom(this.authService.register(this.registerModel() as any));
-        await firstValueFrom(this.authService.login({ email, password }));
+        await firstValueFrom(this.authService.register({
+          username: model.username,
+          email: model.email,
+          password: model.password,
+          avatarUrl: model.avatarUrl || null,
+          bio: model.bio || null
+        }));
+        await firstValueFrom(this.authService.login({ email: model.email, password: model.password }));
         await this.router.navigate(['home']);
       } catch (err) {
         if (err instanceof HttpErrorResponse) {

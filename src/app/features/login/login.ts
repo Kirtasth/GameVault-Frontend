@@ -1,21 +1,26 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormField, form, required, email, submit } from '@angular/forms/signals';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subject, Subscription } from 'rxjs';
+import { throttleTime } from 'rxjs/operators';
+import { DebounceClickDirective } from '../../core/directives/debounce-click.directive';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, FormField, RouterLink],
+  imports: [CommonModule, FormField, RouterLink, DebounceClickDirective],
   templateUrl: './login.html',
   styleUrl: './login.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Login {
+export class Login implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
+
+  private submitSubject = new Subject<void>();
+  private sub?: Subscription;
 
   loginModel = signal({
     email: '',
@@ -31,7 +36,21 @@ export class Login {
   loading = signal(false);
   error = signal('');
 
+  ngOnInit() {
+    this.sub = this.submitSubject.pipe(
+      throttleTime(500, undefined, { leading: true, trailing: false })
+    ).subscribe(() => this.executeSubmit());
+  }
+
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
+  }
+
   onSubmit() {
+    this.submitSubject.next();
+  }
+
+  private executeSubmit() {
     this.error.set('');
 
     submit(this.loginForm, async () => {

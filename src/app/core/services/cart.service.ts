@@ -1,8 +1,9 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject, effect, untracked } from '@angular/core';
 import { Game } from '../models/catalog.model';
 import { Cart, CartItem, UpdateCart } from '../models/cart.model';
 import { BackendService } from './api/backend.service';
 import { CatalogService } from './catalog.service';
+import { AuthService } from './auth.service';
 import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -22,6 +23,7 @@ export class CartService {
   private _checkoutError = signal<string | null>(null);
   private backendService = inject(BackendService);
   private catalogService = inject(CatalogService);
+  private authService = inject(AuthService);
 
   readonly cart = this._cart.asReadonly();
   readonly checkoutError = this._checkoutError.asReadonly();
@@ -31,10 +33,18 @@ export class CartService {
   readonly totalPrice = computed(() => this.items().reduce((acc, item) => acc + (item.game.price * item.quantity), 0));
 
   constructor() {
-    this.loadCart();
+    effect(() => {
+      if (this.authService.isAuthenticatedSignal()) {
+        untracked(() => this.loadCart());
+      } else {
+        this._cart.set(null);
+      }
+    });
   }
 
   async loadCart() {
+    if (!this.authService.isAuthenticated()) return;
+
     try {
       const cart = await firstValueFrom(this.backendService.getMyCart());
       if (cart) {
@@ -79,9 +89,14 @@ export class CartService {
   }
 
   async addToCart(game: Game) {
-    const previousCart = this._cart();
     const gameIdNum = Number(game.id);
 
+    // Guard against duplicates
+    if (this.items().some(item => item.gameId === gameIdNum)) {
+      return;
+    }
+
+    const previousCart = this._cart();
     let newCartState: CartWithGames;
 
     if (previousCart) {

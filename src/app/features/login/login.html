@@ -50,6 +50,7 @@
 
       <!-- Submit Button -->
       <button
+        appDebounceClick
         type="submit"
         [disabled]="loading() || loginForm().pending()"
         class="w-full py-3 px-4 bg-linear-to-r from-peacock-teal to-peacock-emerald hover:from-peacock-emerald hover:to-peacock-teal text-white font-bold rounded-lg shadow-lg transform transition-all duration-200 hover:scale-[1.02] active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-peacock-teal flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"

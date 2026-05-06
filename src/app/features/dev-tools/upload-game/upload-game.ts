@@ -1,21 +1,26 @@
-import { ChangeDetectionStrategy, Component, inject, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, output, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormField, form, required, min, submit } from '@angular/forms/signals';
 import { CatalogService } from '../../../core/services/catalog.service';
 import { NewGameModel } from '../../../core/models/catalog.model';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subject, Subscription } from 'rxjs';
+import { throttleTime } from 'rxjs/operators';
+import { DebounceClickDirective } from '../../../core/directives/debounce-click.directive';
 
 @Component({
   selector: 'app-upload-game',
-  imports: [CommonModule, FormField],
+  imports: [CommonModule, FormField, DebounceClickDirective],
   templateUrl: './upload-game.html',
   styleUrl: './upload-game.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UploadGame {
+export class UploadGame implements OnInit, OnDestroy {
   gameCreated = output<void>();
 
   private catalogService = inject(CatalogService);
+
+  private submitSubject = new Subject<void>();
+  private sub?: Subscription;
 
   uploadGameModel = signal({
     title: '',
@@ -31,7 +36,31 @@ export class UploadGame {
   });
 
   selectedFile = signal<File | null>(null);
+  previewUrl = signal<string>('');
   isSubmitting = signal(false);
+
+  constructor() {
+    effect((onCleanup) => {
+      const file = this.selectedFile();
+      if (file) {
+        const url = URL.createObjectURL(file);
+        this.previewUrl.set(url);
+        onCleanup(() => URL.revokeObjectURL(url));
+      } else {
+        this.previewUrl.set('');
+      }
+    });
+  }
+
+  ngOnInit() {
+    this.sub = this.submitSubject.pipe(
+      throttleTime(500, undefined, { leading: true, trailing: false })
+    ).subscribe(() => this.executeSubmit());
+  }
+
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
+  }
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -41,6 +70,10 @@ export class UploadGame {
   }
 
   onSubmit() {
+    this.submitSubject.next();
+  }
+
+  private executeSubmit() {
     submit(this.uploadGameForm, async () => {
       const file = this.selectedFile();
       if (!file) {

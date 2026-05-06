@@ -32,6 +32,11 @@ export class BackendService {
   private readonly cartUrl = environment.backendUrl + "/cart";
   private readonly checkoutUrl = environment.backendUrl + "/checkout";
 
+  checkHealth(): Observable<unknown> {
+    const healthUrl = environment.backendUrl.replace('/api/v1', '/actuator/health');
+    return this.http.get(healthUrl);
+  }
+
   login(credentialsModel: CredentialsModel): Observable<AuthResponseModel> {
     return this.http.post<AuthResponseModel>(`${this.authUrl}/login`, credentialsModel);
   }

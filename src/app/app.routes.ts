@@ -20,16 +20,16 @@ export const routes: Routes = [
     component: Shell,
     children: [
       {
-        path: 'home',
+        path: '',
         loadComponent: () => import('./features/home/home').then(m => m.Home),
         title: 'GameVault - Home',
+        pathMatch: 'full'
       },
 
       {
         path: 'cart',
         loadComponent: () => import('./features/cart/cart').then(m => m.Cart),
         title: 'GameVault - Cart',
-        canActivate: [AuthGuard],
       },
 
       {
@@ -72,11 +72,10 @@ export const routes: Routes = [
         loadChildren: () => import('./features/profile/profile.routes').then(m => m.PROFILE_ROUTES),
         title: 'GameVault - My Profile',
         canActivate: [AuthGuard],
-      },
-      { path: '', redirectTo: 'home', pathMatch: 'full' }
+      }
     ]
   },
 
-  {path: '**', redirectTo: 'home'}
+  {path: '**', redirectTo: ''}
 
 ];
