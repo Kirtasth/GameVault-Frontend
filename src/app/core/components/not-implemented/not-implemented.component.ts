@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 @Component({
   selector: 'app-not-implemented',
@@ -6,4 +6,10 @@ import { Component } from '@angular/core';
   styleUrls: ['./not-implemented.component.css'],
   standalone: true
 })
-export class NotImplementedComponent {}
+export class NotImplementedComponent {
+  isOpen = signal(false);
+
+  toggle() {
+    this.isOpen.update(v => !v);
+  }
+}

@@ -1,0 +1,9 @@
+<div class="flex h-svh bg-peacock-dark overflow-hidden flex-col lg:flex-row">
+  <app-header></app-header>
+  @if (authService.isAuthenticatedSignal()) {
+    <app-sidebar></app-sidebar>
+  }
+  <main class="flex-1 overflow-y-auto">
+    <router-outlet></router-outlet>
+  </main>
+</div>

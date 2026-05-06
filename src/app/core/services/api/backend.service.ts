@@ -9,7 +9,14 @@ import {
   UserProfileModel
 } from '../../models/user.model';
 import {Observable} from 'rxjs';
-import {CustomGameIds, GamePage, NewDeveloperModel, NewGameModel} from '../../models/catalog.model';
+import {
+  CustomGameIds,
+  GameKeyResponse,
+  GamePage,
+  NewDeveloperModel,
+  NewGameModel,
+  PurchasedGameKeyResponse
+} from '../../models/catalog.model';
 import {Cart, UpdateCart} from '../../models/cart.model';
 
 @Injectable({
@@ -23,6 +30,12 @@ export class BackendService {
   private readonly catalogUrl = environment.backendUrl + "/catalog";
   private readonly usersUrl = environment.backendUrl + "/users";
   private readonly cartUrl = environment.backendUrl + "/cart";
+  private readonly checkoutUrl = environment.backendUrl + "/checkout";
+
+  checkHealth(): Observable<unknown> {
+    const healthUrl = environment.backendUrl.replace('/api/v1', '/actuator/health');
+    return this.http.get(healthUrl);
+  }
 
   login(credentialsModel: CredentialsModel): Observable<AuthResponseModel> {
     return this.http.post<AuthResponseModel>(`${this.authUrl}/login`, credentialsModel);
@@ -87,12 +100,20 @@ export class BackendService {
     return this.http.get<GamePage>(`${this.catalogUrl}/my-games`);
   }
 
-  getPurchasedGames(): Observable<GamePage> {
-    return this.http.get<GamePage>(`${this.catalogUrl}/purchased-games`);
+  getPurchasedGames(): Observable<PurchasedGameKeyResponse[]> {
+    return this.http.get<PurchasedGameKeyResponse[]>(`${this.checkoutUrl}/my-keys`);
   }
 
   getGamesFromIds(gameIds: CustomGameIds): Observable<GamePage> {
     return this.http.post<GamePage>(`${this.catalogUrl}/custom-game-list`, gameIds);
+  }
+
+  addKeysToGame(gameId: string, keys: string[]): Observable<unknown> {
+    return this.http.post(`${this.checkoutUrl}/games/${gameId}/keys`, { keys });
+  }
+
+  getGameKeys(gameId: string): Observable<GameKeyResponse[]> {
+    return this.http.get<GameKeyResponse[]>(`${this.checkoutUrl}/games/${gameId}/keys`);
   }
 
   getMyCart(): Observable<Cart> {
@@ -109,6 +130,10 @@ export class BackendService {
 
   clearCart(): Observable<unknown> {
     return this.http.delete(`${this.cartUrl}`);
+  }
+
+  checkout(): Observable<{ url: string }> {
+    return this.http.post<{ url: string }>(`${this.checkoutUrl}`, {});
   }
 
 

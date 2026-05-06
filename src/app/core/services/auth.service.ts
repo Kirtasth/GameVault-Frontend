@@ -1,4 +1,4 @@
-import {inject, Injectable} from '@angular/core';
+import {inject, Injectable, signal} from '@angular/core';
 import {BackendService} from "./api/backend.service";
 import {AuthResponseModel, CredentialsModel, RegistrationModel} from '../models/user.model';
 import {finalize, map, Observable, throwError} from 'rxjs';
@@ -10,6 +10,8 @@ import {REFRESH_TOKEN_STORAGE_KEY, TOKEN_STORAGE_KEY, USER_ID_STORAGE_KEY} from 
 export class AuthService {
 
   private readonly backendService = inject(BackendService);
+  private _isAuthenticated = signal<boolean>(!!this.getToken());
+  readonly isAuthenticatedSignal = this._isAuthenticated.asReadonly();
 
   login(credentials: CredentialsModel): Observable<unknown> {
     return this.backendService.login(credentials).pipe(
@@ -18,6 +20,7 @@ export class AuthService {
         localStorage.setItem(TOKEN_STORAGE_KEY, response.accessToken);
         localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, response.refreshToken);
 
+        this._isAuthenticated.set(true);
         return 'OK';
       })
     );
@@ -59,6 +62,7 @@ export class AuthService {
     localStorage.removeItem(USER_ID_STORAGE_KEY);
     localStorage.removeItem(TOKEN_STORAGE_KEY);
     localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
+    this._isAuthenticated.set(false);
   }
 
   refreshToken(): Observable<AuthResponseModel> {

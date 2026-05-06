@@ -1,16 +1,25 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Login } from './login';
-import { ReactiveFormsModule } from '@angular/forms';
 import { provideRouter } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
+import { of } from 'rxjs';
 
 describe('Login', () => {
   let component: Login;
   let fixture: ComponentFixture<Login>;
+  let authServiceMock: Partial<AuthService>;
 
   beforeEach(async () => {
+    authServiceMock = {
+      login: vi.fn().mockReturnValue(of({}))
+    };
+
     await TestBed.configureTestingModule({
-      imports: [Login, ReactiveFormsModule],
-      providers: [provideRouter([])]
+      imports: [Login],
+      providers: [
+        provideRouter([]),
+        { provide: AuthService, useValue: authServiceMock }
+      ]
     })
     .compileComponents();
 
@@ -24,20 +33,22 @@ describe('Login', () => {
   });
 
   it('should have invalid form when empty', () => {
-    expect(component.loginForm.valid).toBeFalsy();
+    expect(component.loginForm().invalid()).toBeTruthy();
   });
 
   it('should validate email format', () => {
-    const email = component.loginForm.controls['email'];
-    email.setValue('test');
-    expect(email.errors?.['email']).toBeTruthy();
-    email.setValue('test@example.com');
-    expect(email.errors).toBeNull();
+    component.loginModel.set({ email: 'test', password: '' });
+    fixture.detectChanges();
+    expect(component.loginForm.email().errors().some(e => e.kind === 'email')).toBeTruthy();
+
+    component.loginModel.set({ email: 'test@example.com', password: '' });
+    fixture.detectChanges();
+    expect(component.loginForm.email().errors().some(e => e.kind === 'email')).toBeFalsy();
   });
 
   it('should be valid when filled correctly', () => {
-    component.loginForm.controls['email'].setValue('test@example.com');
-    component.loginForm.controls['password'].setValue('password123');
-    expect(component.loginForm.valid).toBeTruthy();
+    component.loginModel.set({ email: 'test@example.com', password: 'password123' });
+    fixture.detectChanges();
+    expect(component.loginForm().valid()).toBeTruthy();
   });
 });

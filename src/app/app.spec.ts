@@ -1,10 +1,25 @@
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
+import { BackendService } from './core/services/api/backend.service';
+import { of } from 'rxjs';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('App', () => {
+  let mockBackendService: Partial<BackendService>;
+
   beforeEach(async () => {
+    mockBackendService = {
+      checkHealth: vi.fn().mockReturnValue(of({ status: 'UP' }))
+    };
+
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [
+        { provide: BackendService, useValue: mockBackendService },
+        provideHttpClient(),
+        provideHttpClientTesting()
+      ]
     }).compileComponents();
   });
 
@@ -14,10 +29,10 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should have a router-outlet', () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, GameVault-Frontend');
+    expect(compiled.querySelector('router-outlet')).toBeTruthy();
   });
 });

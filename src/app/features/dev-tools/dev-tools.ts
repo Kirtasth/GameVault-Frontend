@@ -1,21 +1,20 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Sidebar } from '../../core/components/sidebar/sidebar';
 import { MyGames } from './my-games/my-games';
 import { UploadGame } from './upload-game/upload-game';
 
 @Component({
   selector: 'app-dev-tools',
-  standalone: true,
-  imports: [CommonModule, Sidebar, MyGames, UploadGame],
+  imports: [CommonModule, MyGames, UploadGame],
   templateUrl: './dev-tools.html',
-  styleUrls: ['./dev-tools.scss']
+  styleUrls: ['./dev-tools.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DevToolsComponent {
-  activeTab: 'my-games' | 'upload-game' = 'my-games';
+  activeTab = signal<'my-games' | 'upload-game'>('my-games');
 
   setActiveTab(tab: 'my-games' | 'upload-game') {
-    this.activeTab = tab;
+    this.activeTab.set(tab);
   }
 
   onGameCreated() {

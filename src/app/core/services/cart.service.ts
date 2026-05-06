@@ -1,9 +1,11 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject, effect, untracked } from '@angular/core';
 import { Game } from '../models/catalog.model';
 import { Cart, CartItem, UpdateCart } from '../models/cart.model';
 import { BackendService } from './api/backend.service';
 import { CatalogService } from './catalog.service';
+import { AuthService } from './auth.service';
 import { firstValueFrom } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export interface CartItemWithGame extends CartItem {
   game: Game;
@@ -18,20 +20,31 @@ export interface CartWithGames extends Omit<Cart, 'items'> {
 })
 export class CartService {
   private _cart = signal<CartWithGames | null>(null);
+  private _checkoutError = signal<string | null>(null);
   private backendService = inject(BackendService);
   private catalogService = inject(CatalogService);
+  private authService = inject(AuthService);
 
   readonly cart = this._cart.asReadonly();
+  readonly checkoutError = this._checkoutError.asReadonly();
 
   readonly items = computed(() => this._cart()?.items ?? []);
   readonly totalItems = computed(() => this.items().reduce((acc, item) => acc + item.quantity, 0));
   readonly totalPrice = computed(() => this.items().reduce((acc, item) => acc + (item.game.price * item.quantity), 0));
 
   constructor() {
-    this.loadCart();
+    effect(() => {
+      if (this.authService.isAuthenticatedSignal()) {
+        untracked(() => this.loadCart());
+      } else {
+        this._cart.set(null);
+      }
+    });
   }
 
   async loadCart() {
+    if (!this.authService.isAuthenticated()) return;
+
     try {
       const cart = await firstValueFrom(this.backendService.getMyCart());
       if (cart) {
@@ -76,9 +89,14 @@ export class CartService {
   }
 
   async addToCart(game: Game) {
-    const previousCart = this._cart();
     const gameIdNum = Number(game.id);
 
+    // Guard against duplicates
+    if (this.items().some(item => item.gameId === gameIdNum)) {
+      return;
+    }
+
+    const previousCart = this._cart();
     let newCartState: CartWithGames;
 
     if (previousCart) {
@@ -158,8 +176,8 @@ export class CartService {
     if (!previousCart) return;
 
     const newItems = previousCart.items.map(i =>
-        i.id === item.id ? { ...item, quantity } : item
-    ) as CartItemWithGame[];
+      i.id === item.id ? { ...i, quantity } : i
+    );
 
     this._cart.set({ ...previousCart, items: newItems });
 
@@ -189,6 +207,23 @@ export class CartService {
     } catch (error) {
       console.error('Failed to clear cart. Reverting.', error);
       this._cart.set(previousCart);
+    }
+  }
+
+  async checkout() {
+    this._checkoutError.set(null);
+    try {
+      const response = await firstValueFrom(this.backendService.checkout());
+      if (response && response.url) {
+        window.location.href = response.url;
+      }
+    } catch (error) {
+      if (error instanceof HttpErrorResponse && error.status === 409) {
+        this._checkoutError.set('Some games in your cart are out of stock. Please remove them and try again.');
+      } else {
+        console.error('Checkout failed', error);
+        this._checkoutError.set('An unexpected error occurred during checkout. Please try again later.');
+      }
     }
   }
 }

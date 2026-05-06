@@ -1,52 +1,77 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormField, form, required, email, submit } from '@angular/forms/signals';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { firstValueFrom, Subject, Subscription } from 'rxjs';
+import { throttleTime } from 'rxjs/operators';
+import { DebounceClickDirective } from '../../core/directives/debounce-click.directive';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, FormField, RouterLink, DebounceClickDirective],
   templateUrl: './login.html',
   styleUrl: './login.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Login {
-  loginForm: FormGroup;
-  submitted = false;
-  loading = false;
-  error = '';
-
-  private formBuilder = inject(FormBuilder);
+export class Login implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  constructor() {
-    this.loginForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]]
-    });
+  private submitSubject = new Subject<void>();
+  private sub?: Subscription;
+
+  loginModel = signal({
+    email: '',
+    password: ''
+  });
+
+  loginForm = form(this.loginModel, (s) => {
+    required(s.email, { message: 'Email is required' });
+    email(s.email, { message: 'Invalid email format' });
+    required(s.password, { message: 'Password is required' });
+  });
+
+  loading = signal(false);
+  error = signal('');
+
+  ngOnInit() {
+    this.sub = this.submitSubject.pipe(
+      throttleTime(500, undefined, { leading: true, trailing: false })
+    ).subscribe(() => this.executeSubmit());
+  }
+
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
   }
 
   onSubmit() {
-    this.submitted = true;
-    this.error = '';
+    this.submitSubject.next();
+  }
 
-    if (this.loginForm.invalid) {
-      return;
-    }
+  private executeSubmit() {
+    this.error.set('');
 
-    this.loading = true;
-    this.authService.login(this.loginForm.value).subscribe({
-      next: () => {
-        this.router.navigate(['']).then(); // Navigate to home/dashboard
-      },
-      error: () => {
-        this.error = 'Invalid email or password';
-        this.loading = false;
-      },
-      complete: () => {
-        this.loading = false;
+    submit(this.loginForm, async () => {
+      this.loading.set(true);
+      try {
+        await firstValueFrom(this.authService.login(this.loginModel()));
+        await this.router.navigate(['']);
+      } catch (err) {
+        if (err instanceof HttpErrorResponse) {
+          if (err.status === 401) {
+            this.error.set('Invalid email or password.');
+          } else if (err.status === 500) {
+            this.error.set('A server error occurred. Please try again later.');
+          } else {
+            this.error.set('An unexpected error occurred. Please try again.');
+          }
+        } else {
+          this.error.set('An unexpected error occurred.');
+        }
+      } finally {
+        this.loading.set(false);
       }
     });
   }

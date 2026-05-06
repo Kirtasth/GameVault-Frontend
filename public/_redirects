@@ -1,0 +1,2 @@
+/images/* http://minio:9000/gamevault-bucket/:splat 200
+/* /index.html 200
