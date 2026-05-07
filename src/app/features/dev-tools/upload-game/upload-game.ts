@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy, output, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormField, form, required, min, submit } from '@angular/forms/signals';
+import { FormField, form, required, min, submit, validate } from '@angular/forms/signals';
 import { CatalogService } from '../../../core/services/catalog.service';
 import { NewGameModel } from '../../../core/models/catalog.model';
 import { firstValueFrom, Subject, Subscription } from 'rxjs';
@@ -33,6 +33,14 @@ export class UploadGame implements OnInit, OnDestroy {
     required(s.title, { message: 'Title is required' });
     required(s.price, { message: 'Price is required' });
     min(s.price, 0, { message: 'Price must be at least 0' });
+    validate(s.price, ({ valueOf }) => {
+      const val = valueOf(s.price);
+      const str = val.toString();
+      if (str.includes('.') && str.split('.')[1].length > 2) {
+        return { kind: 'decimal', message: 'Price must have at most 2 decimal places' };
+      }
+      return undefined;
+    });
   });
 
   selectedFile = signal<File | null>(null);
