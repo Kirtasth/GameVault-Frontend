@@ -1,60 +1,31 @@
-# 🎮 GameVault
+# GameVault
 
-> A powerful and easy-to-use game key store simulation.
+A powerful and easy-to-use game key store simulation.
 
-![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Stripe](https://img.shields.io/badge/Stripe-626CD9?style=for-the-badge&logo=Stripe&logoColor=white)
+## Features
 
----
+- User Roles:
+  - USER: Can log in/out, browse the catalog, and purchase games via Stripe.
+  - DEVELOPER: Inherits User permissions and can also publish new games.
+  - ADMIN: Has full control and permissions over the entire application.
+- Payments: Integrated securely with the Stripe API.
+- Data Management: Managed by a dedicated Backend API.
+- Security: Automatic redirection for unknown routes.
+- Pages:
+  - Authentication: Register and Login.
+  - User Area: Dashboard and Catalog.
+  - Developer Area: Dashboard and Game Management.
+  - Admin Area: Dashboard and System Administration.
 
-## 📖 About The Project
+## Instructions
 
-**GameVault** is a personal project designed to simulate a modern digital game store. The goal is to build a platform that is intuitive for users while offering powerful features for developers and administrators.
+### Prerequisites
 
-This repository focuses on the **Frontend** of the application.
+Ensure you have Node.js and the Angular CLI installed.
 
-### 🔑 Key Features & Rules
+### Installation
 
-*   **User Roles**:
-    *   👤 **USER**: Can log in/out, browse the catalog, and purchase games via Stripe.
-    *   🛠️ **DEVELOPER**: Inherits User permissions but can also publish new games (upload images, descriptions, etc.).
-    *   🛡️ **ADMIN**: Has full control and permissions over the entire application.
-*   **Payments**: Integrated securely with the **Stripe API**.
-*   **Data**: All data is managed by a dedicated Backend API.
-*   **Security**: Automatic redirection for unknown routes (Login for guests, Dashboard for authenticated users).
-
----
-
-## 🛠️ Tech Stack
-
-*   **Framework**: [Angular 21](https://angular.io/)
-*   **Styling**: [TailwindCSS](https://tailwindcss.com/)
-
----
-
-## 🎨 Design & Style
-
-The application features a clean, simple, and modern interface, accented with a **Peacock** color palette to ensure a pleasant user experience.
-
----
-
-## 📱 Pages
-
-*   🔐 **Authentication**
-    *   Register
-    *   Login
-*   👤 **User Area**
-    *   Dashboard
-    *   Catalog
-*   🛠️ **Developer Area**
-    *   Dashboard (Game Management)
-*   🛡️ **Admin Area**
-    *   Dashboard (System Administration)
-
----
-
-## 🚀 Getting Started
+Run `npm install` to install the dependencies.
 
 ### Development server
 
